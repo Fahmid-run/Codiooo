@@ -1,0 +1,14 @@
+node_modules/
+dist/
+.env
+.env.*
+
+src/prisma/contract.json
+src/prisma/contract.d.ts
+.prisma/local.json
+# AI Agents & IDE Local Runtime Files
+*.local.md
+*.local.json
+.claude/cache/
+.cursor/cache/
+.agent-secrets
