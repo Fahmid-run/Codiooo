@@ -16,6 +16,7 @@
     "@repo/ui": "workspace:*",
     "@tailwindcss/postcss": "^4.3.3",
     "@tanstack/react-form": "^1.33.5",
+    "@tanstack/react-form-nextjs": "^1.33.5",
     "@tanstack/react-query": "^5.104.5",
     "better-auth": "^1.7.12",
     "class-variance-authority": "^0.7.1",
@@ -25,6 +26,7 @@
     "ofetch": "^1.5.1",
     "pg": "^8.23.1",
     "postcss": "^8.5.31",
+    "radix-ui": "^1.8.1",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "shadcn": "^4.22.1",
@@ -33,6 +35,7 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@babel/preset-typescript": "8.0.1",
     "@repo/eslint-config": "workspace:*",
     "@repo/typescript-config": "workspace:*",
     "@types/node": "26.4.1",
