@@ -18,6 +18,7 @@ import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
 import { RegisterSchema } from "@/schema/authSchema";
 import { useForm } from "@tanstack/react-form";
+import Link from "next/link";
 
 export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
   const handleGithub = async () => {
@@ -195,7 +196,8 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
                   Sign up with Github
                 </Button>
                 <FieldDescription className="px-6 text-center">
-                  Already have an account? <a href="#">Sign in</a>
+                  Already have an account?{" "}
+                  <Link href="/auth/login">Sign in</Link>
                 </FieldDescription>
               </Field>
             </FieldGroup>
