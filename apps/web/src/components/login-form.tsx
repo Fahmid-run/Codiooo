@@ -29,7 +29,7 @@ export function LoginForm({
     await authClient.signIn.social({
       provider: "github",
 
-      callbackURL: "/dashboard",
+      callbackURL: "/editor",
 
       errorCallbackURL: "/error",
 
