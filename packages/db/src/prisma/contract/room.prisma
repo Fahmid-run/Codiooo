@@ -1,0 +1,20 @@
+// use prisma-8
+
+model CollaborationRoom{
+  id            String   @id        @onCreate(uuid())
+  name          String
+  status  RoomStatus @default(ACTIVE)
+
+  projectId String
+  project Project @relation(fields: [projectId], references: [id])
+
+  projectOwnerId String
+  projectOwner User @relation(fields: [projectOwnerId], references: [id])
+
+  createdAt     TimestamptzJsDate @default(now())
+  updatedAt     TimestamptzJsDate @default(now())
+
+
+
+@@map("rooms")
+}

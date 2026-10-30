@@ -1,0 +1,19 @@
+//use prisma-8
+model ProjectMember {
+  id            String    @id       @onCreate(uuid())
+  name          String
+  status  RoomStatus @default(ACTIVE)
+  permission ProjectMemberPermission
+
+  projectId String
+  project Project @relation(fields: [projectId], references: [id])
+
+  userId String
+  user User @relation(fields: [userId], references: [id])
+
+  createdAt     TimestamptzJsDate @default(now())
+  updatedAt     TimestamptzJsDate @default(now())
+
+
+@@map("projectMember")
+}

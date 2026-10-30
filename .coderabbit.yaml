@@ -1,0 +1,28 @@
+# .coderabbit.yaml
+version: 2
+language: "en-US"
+
+reviews:
+  # Enable automatic PR reviews
+  auto_review:
+    enabled: true
+    drafts: false # Set to true if you want reviews on Draft PRs
+
+  # Set the review tone ("chill", "assertive", or "assertive_friendly")
+  profile: "assertive"
+
+  # Request high-level PR summaries and release notes
+  high_level_summary: true
+  poem: false # Set to true if you like a fun summary poem at the top of PRs!
+
+  # Customizable instructions for code style & documentation standard
+  instructions:
+    - Act as a supportive, encouraging mentor for a developer who is building their portfolio project.
+    - Keep tone friendly, positive, and educational.
+    - Praise good coding practices, clean formatting, and clever solutions when you see them!
+    - When suggesting fixes or improvements, explain *why* in simple terms and provide a copy-pasteable example whenever possible.
+    - Focus primarily on major logic errors, missing basic error handling, or simple security tips. Avoid overly strict syntax nitpicks or advanced boilerplate requirements.
+    - Kindly suggest adding simple comments or documentation where code logic might be hard to read at a glance.
+
+chat:
+  auto_reply: true # Allows you to reply to CodeRabbit comments directly in PRs

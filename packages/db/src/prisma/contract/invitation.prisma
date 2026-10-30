@@ -1,0 +1,21 @@
+//use prisma-8
+model Invitation {
+  id             String             @id @onCreate(uuid())
+  inviteeEmailId String
+  inviteeEmail   User               @relation(fields: [inviteeEmailId], references: [id])
+  projectId      String
+  project        Project            @relation(fields: [projectId], references: [id])
+  invitedById    String
+  invitedBy      User               @relation(fields: [invitedById], references: [id])
+
+  recipientId    String
+  recipient      User               @relation(fields: [recipientId], references: [id])
+
+  status         InvitationAccepted
+
+  expiration     TimestamptzJsDate
+  createdAt      TimestamptzJsDate  @default(now())
+  updatedAt      TimestamptzJsDate  @default(now())
+
+  @@map("invitation")
+}

@@ -1,0 +1,19 @@
+// use prisma-8
+
+model Document{
+  id            String    @id       @onCreate(uuid())
+  name          String
+  roomId String
+  room CollaborationRoom @relation(fields: [roomId], references: [id])
+  language DocumentLanguage
+  createdById String
+  createdBy User @relation(fields: [createdById], references: [id])
+  state DocumentState[]
+
+  createdAt     TimestamptzJsDate @default(now())
+  updatedAt     TimestamptzJsDate @default(now())
+
+
+@@map("document")
+
+}
