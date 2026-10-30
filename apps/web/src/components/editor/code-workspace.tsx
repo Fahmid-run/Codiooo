@@ -412,7 +412,7 @@ export default function CodeLabWorkspace() {
       setStatus("Syncing files…");
       await writeProjectFiles(container, filesRef.current);
 
-      if (activeFile.kind === "node") {
+      if (activeFile?.kind === "node") {
         setStatus("Running Node.js…");
         terminal?.writeln(`\r\n$ node ${activeFile.path}`);
 
