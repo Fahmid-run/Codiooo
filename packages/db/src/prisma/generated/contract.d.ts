@@ -23,8 +23,9 @@ import type {
 } from '@prisma/orm-postgres/contract/types';
 
 export type StorageHash =
-  StorageHashBase<'12d0cc4aa4af99793cd89d7a80e303703555277cceb9f9a0b9e7436d6e7b98c5'>;
-export type ExecutionHash = ExecutionHashBase<string>;
+  StorageHashBase<'7a72a2de0fb864ce727706916e1a1c345916b5670f0aa27ab95dde15f5d323b8'>;
+export type ExecutionHash =
+  ExecutionHashBase<'c3e0999a16cef41cb62115db36688ca9d21ac3580427e7c9ab78c7a1998c73f8'>;
 export type ProfileHash =
   ProfileHashBase<'3916f444a8a17ad749191acf9e08dad97d1a327b88c2f1d45d12f240296aa8b2'>;
 
@@ -269,7 +270,31 @@ type DefaultLiteralValue<CodecId extends string, Encoded> = CodecId extends keyo
   : Encoded;
 type ParameterizedOutputTypeFunctions = PgParameterizedOutputTypes;
 
-type FieldTypeOverrides = {};
+type FieldTypeOverrides = {
+  readonly public: {
+    readonly models: {
+      readonly CollaborationRoom: {
+        readonly status: { readonly output: 'ACTIVE'; readonly input: 'ACTIVE' };
+      };
+      readonly Document: {
+        readonly language: {
+          readonly output: 'JAVASCRIPT' | 'PYTHON' | 'TYPESCRIPT' | 'JAVA' | 'C' | 'CPlus';
+          readonly input: 'JAVASCRIPT' | 'PYTHON' | 'TYPESCRIPT' | 'JAVA' | 'C' | 'CPlus';
+        };
+      };
+      readonly Invitation: {
+        readonly status: {
+          readonly output: 'ACCEPTED' | 'PENDING' | 'REJECTED';
+          readonly input: 'ACCEPTED' | 'PENDING' | 'REJECTED';
+        };
+      };
+      readonly ProjectMember: {
+        readonly permission: { readonly output: 'Maintainer'; readonly input: 'Maintainer' };
+        readonly status: { readonly output: 'ACTIVE'; readonly input: 'ACTIVE' };
+      };
+    };
+  };
+};
 export type FieldOutputTypes = FieldTypesFromDomain<
   ContractBase['domain']['namespaces'],
   CodecTypes,
@@ -284,7 +309,27 @@ export type FieldInputTypes = FieldTypesFromDomain<
   FieldTypeOverrides,
   'input'
 >;
-type ColumnTypeOverrides = {};
+type ColumnTypeOverrides = {
+  readonly public: {
+    readonly document: {
+      readonly language: {
+        readonly output: 'JAVASCRIPT' | 'PYTHON' | 'TYPESCRIPT' | 'JAVA' | 'C' | 'CPlus';
+        readonly input: 'JAVASCRIPT' | 'PYTHON' | 'TYPESCRIPT' | 'JAVA' | 'C' | 'CPlus';
+      };
+    };
+    readonly invitation: {
+      readonly status: {
+        readonly output: 'ACCEPTED' | 'PENDING' | 'REJECTED';
+        readonly input: 'ACCEPTED' | 'PENDING' | 'REJECTED';
+      };
+    };
+    readonly projectMember: {
+      readonly permission: { readonly output: 'Maintainer'; readonly input: 'Maintainer' };
+      readonly status: { readonly output: 'ACTIVE'; readonly input: 'ACTIVE' };
+    };
+    readonly rooms: { readonly status: { readonly output: 'ACTIVE'; readonly input: 'ACTIVE' } };
+  };
+};
 export type StorageColumnTypes = ColumnTypesFromStorage<
   ContractBase['storage'],
   CodecTypes,
@@ -318,6 +363,81 @@ export namespace Models {
     user: public_User;
     readonly [RelationKeys]?: 'user';
   };
+  export type public_CollaborationRoom = {
+    createdAt: FieldOutputTypes['public']['CollaborationRoom']['createdAt'];
+    id: FieldOutputTypes['public']['CollaborationRoom']['id'];
+    name: FieldOutputTypes['public']['CollaborationRoom']['name'];
+    projectId: FieldOutputTypes['public']['CollaborationRoom']['projectId'];
+    projectOwnerId: FieldOutputTypes['public']['CollaborationRoom']['projectOwnerId'];
+    status: FieldOutputTypes['public']['CollaborationRoom']['status'];
+    updatedAt: FieldOutputTypes['public']['CollaborationRoom']['updatedAt'];
+    project: public_Project;
+    projectOwner: public_User;
+    readonly [RelationKeys]?: 'project' | 'projectOwner';
+  };
+  export type public_Document = {
+    createdAt: FieldOutputTypes['public']['Document']['createdAt'];
+    createdById: FieldOutputTypes['public']['Document']['createdById'];
+    id: FieldOutputTypes['public']['Document']['id'];
+    language: FieldOutputTypes['public']['Document']['language'];
+    name: FieldOutputTypes['public']['Document']['name'];
+    roomId: FieldOutputTypes['public']['Document']['roomId'];
+    updatedAt: FieldOutputTypes['public']['Document']['updatedAt'];
+    createdBy: public_User;
+    room: public_CollaborationRoom;
+    state: public_DocumentState[];
+    readonly [RelationKeys]?: 'createdBy' | 'room' | 'state';
+  };
+  export type public_DocumentState = {
+    createdAt: FieldOutputTypes['public']['DocumentState']['createdAt'];
+    documentId: FieldOutputTypes['public']['DocumentState']['documentId'];
+    id: FieldOutputTypes['public']['DocumentState']['id'];
+    state: FieldOutputTypes['public']['DocumentState']['state'];
+    updatedAt: FieldOutputTypes['public']['DocumentState']['updatedAt'];
+    document: public_Document;
+    readonly [RelationKeys]?: 'document';
+  };
+  export type public_Invitation = {
+    createdAt: FieldOutputTypes['public']['Invitation']['createdAt'];
+    expiration: FieldOutputTypes['public']['Invitation']['expiration'];
+    id: FieldOutputTypes['public']['Invitation']['id'];
+    invitedById: FieldOutputTypes['public']['Invitation']['invitedById'];
+    inviteeEmailId: FieldOutputTypes['public']['Invitation']['inviteeEmailId'];
+    projectId: FieldOutputTypes['public']['Invitation']['projectId'];
+    recipientId: FieldOutputTypes['public']['Invitation']['recipientId'];
+    status: FieldOutputTypes['public']['Invitation']['status'];
+    updatedAt: FieldOutputTypes['public']['Invitation']['updatedAt'];
+    invitedBy: public_User;
+    inviteeEmail: public_User;
+    project: public_Project;
+    recipient: public_User;
+    readonly [RelationKeys]?: 'invitedBy' | 'inviteeEmail' | 'project' | 'recipient';
+  };
+  export type public_Project = {
+    createdAt: FieldOutputTypes['public']['Project']['createdAt'];
+    description: FieldOutputTypes['public']['Project']['description'];
+    id: FieldOutputTypes['public']['Project']['id'];
+    name: FieldOutputTypes['public']['Project']['name'];
+    projectOwnerId: FieldOutputTypes['public']['Project']['projectOwnerId'];
+    updatedAt: FieldOutputTypes['public']['Project']['updatedAt'];
+    collaborationRooms: public_CollaborationRoom[];
+    projectMembers: public_ProjectMember[];
+    projectOwner: public_User;
+    readonly [RelationKeys]?: 'collaborationRooms' | 'projectMembers' | 'projectOwner';
+  };
+  export type public_ProjectMember = {
+    createdAt: FieldOutputTypes['public']['ProjectMember']['createdAt'];
+    id: FieldOutputTypes['public']['ProjectMember']['id'];
+    name: FieldOutputTypes['public']['ProjectMember']['name'];
+    permission: FieldOutputTypes['public']['ProjectMember']['permission'];
+    projectId: FieldOutputTypes['public']['ProjectMember']['projectId'];
+    status: FieldOutputTypes['public']['ProjectMember']['status'];
+    updatedAt: FieldOutputTypes['public']['ProjectMember']['updatedAt'];
+    userId: FieldOutputTypes['public']['ProjectMember']['userId'];
+    project: public_Project;
+    user: public_User;
+    readonly [RelationKeys]?: 'project' | 'user';
+  };
   export type public_Session = {
     createdAt: FieldOutputTypes['public']['Session']['createdAt'];
     expiresAt: FieldOutputTypes['public']['Session']['expiresAt'];
@@ -339,8 +459,13 @@ export namespace Models {
     name: FieldOutputTypes['public']['User']['name'];
     updatedAt: FieldOutputTypes['public']['User']['updatedAt'];
     accounts: public_Account[];
+    collaborationRooms: public_CollaborationRoom[];
+    documents: public_Document[];
+    projectmembers: public_ProjectMember[];
+    projects: public_Project[];
     sessions: public_Session[];
-    readonly [RelationKeys]?: 'accounts' | 'sessions';
+    readonly [RelationKeys]?:
+      'accounts' | 'collaborationRooms' | 'documents' | 'projectmembers' | 'projects' | 'sessions';
   };
   export type public_Verification = {
     createdAt: FieldOutputTypes['public']['Verification']['createdAt'];
@@ -356,6 +481,12 @@ export namespace Models {
 export declare const models: {
   public: {
     Account: Models.public_Account;
+    CollaborationRoom: Models.public_CollaborationRoom;
+    Document: Models.public_Document;
+    DocumentState: Models.public_DocumentState;
+    Invitation: Models.public_Invitation;
+    Project: Models.public_Project;
+    ProjectMember: Models.public_ProjectMember;
     Session: Models.public_Session;
     User: Models.public_User;
     Verification: Models.public_Verification;
@@ -484,6 +615,554 @@ type ContractBase = Omit<
                     readonly columns: readonly ['id'];
                   };
                   readonly name: 'account_userId_fkey';
+                },
+              ];
+            };
+            readonly document: {
+              columns: {
+                readonly createdAt: {
+                  readonly dataType: 'pg/timestamptz';
+                  readonly codecId: 'pg/timestamptz-date@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                  readonly many: false;
+                };
+                readonly createdById: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly id: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly language: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly name: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly roomId: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly updatedAt: {
+                  readonly dataType: 'pg/timestamptz';
+                  readonly codecId: 'pg/timestamptz-date@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                  readonly many: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [];
+              indexes: readonly [
+                {
+                  readonly name: 'document_createdById_idx_8bf640ed';
+                  readonly prefix: 'document_createdById_idx';
+                  readonly columns: readonly ['createdById'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'document_roomId_idx_fe51d647';
+                  readonly prefix: 'document_roomId_idx';
+                  readonly columns: readonly ['roomId'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'document';
+                    readonly columns: readonly ['roomId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'rooms';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'document';
+                    readonly columns: readonly ['createdById'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'user';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
+            readonly documentState: {
+              columns: {
+                readonly createdAt: {
+                  readonly dataType: 'pg/timestamp';
+                  readonly codecId: 'pg/timestamp-date@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                  readonly many: false;
+                };
+                readonly documentId: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly id: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly state: {
+                  readonly dataType: 'pg/bytea';
+                  readonly codecId: 'pg/bytea@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly updatedAt: {
+                  readonly dataType: 'pg/timestamp';
+                  readonly codecId: 'pg/timestamp-date@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                  readonly many: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [];
+              indexes: readonly [
+                {
+                  readonly name: 'documentState_documentId_idx_825ef746';
+                  readonly prefix: 'documentState_documentId_idx';
+                  readonly columns: readonly ['documentId'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'documentState';
+                    readonly columns: readonly ['documentId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'document';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
+            readonly invitation: {
+              columns: {
+                readonly createdAt: {
+                  readonly dataType: 'pg/timestamptz';
+                  readonly codecId: 'pg/timestamptz-date@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                  readonly many: false;
+                };
+                readonly expiration: {
+                  readonly dataType: 'pg/timestamptz';
+                  readonly codecId: 'pg/timestamptz-date@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly id: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly invitedById: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly inviteeEmailId: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly projectId: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly recipientId: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly status: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly updatedAt: {
+                  readonly dataType: 'pg/timestamptz';
+                  readonly codecId: 'pg/timestamptz-date@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                  readonly many: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [];
+              indexes: readonly [
+                {
+                  readonly name: 'invitation_invitedById_idx_61689f37';
+                  readonly prefix: 'invitation_invitedById_idx';
+                  readonly columns: readonly ['invitedById'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'invitation_inviteeEmailId_idx_6a5ba722';
+                  readonly prefix: 'invitation_inviteeEmailId_idx';
+                  readonly columns: readonly ['inviteeEmailId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'invitation_projectId_idx_a96e4d92';
+                  readonly prefix: 'invitation_projectId_idx';
+                  readonly columns: readonly ['projectId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'invitation_recipientId_idx_c9527cf8';
+                  readonly prefix: 'invitation_recipientId_idx';
+                  readonly columns: readonly ['recipientId'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'invitation';
+                    readonly columns: readonly ['inviteeEmailId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'user';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'invitation';
+                    readonly columns: readonly ['projectId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'project';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'invitation';
+                    readonly columns: readonly ['invitedById'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'user';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'invitation';
+                    readonly columns: readonly ['recipientId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'user';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
+            readonly project: {
+              columns: {
+                readonly createdAt: {
+                  readonly dataType: 'pg/timestamptz';
+                  readonly codecId: 'pg/timestamptz-date@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                  readonly many: false;
+                };
+                readonly description: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: true;
+                  readonly many: false;
+                };
+                readonly id: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly name: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly projectOwnerId: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly updatedAt: {
+                  readonly dataType: 'pg/timestamptz';
+                  readonly codecId: 'pg/timestamptz-date@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                  readonly many: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [];
+              indexes: readonly [
+                {
+                  readonly name: 'project_projectOwnerId_idx_ca18ad21';
+                  readonly prefix: 'project_projectOwnerId_idx';
+                  readonly columns: readonly ['projectOwnerId'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'project';
+                    readonly columns: readonly ['projectOwnerId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'user';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
+            readonly projectMember: {
+              columns: {
+                readonly createdAt: {
+                  readonly dataType: 'pg/timestamptz';
+                  readonly codecId: 'pg/timestamptz-date@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                  readonly many: false;
+                };
+                readonly id: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly name: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly permission: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly projectId: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly status: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', 'ACTIVE'>;
+                  };
+                  readonly many: false;
+                };
+                readonly updatedAt: {
+                  readonly dataType: 'pg/timestamptz';
+                  readonly codecId: 'pg/timestamptz-date@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                  readonly many: false;
+                };
+                readonly userId: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [];
+              indexes: readonly [
+                {
+                  readonly name: 'projectMember_projectId_idx_a96e4d92';
+                  readonly prefix: 'projectMember_projectId_idx';
+                  readonly columns: readonly ['projectId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'projectMember_userId_idx_a489d58a';
+                  readonly prefix: 'projectMember_userId_idx';
+                  readonly columns: readonly ['userId'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'projectMember';
+                    readonly columns: readonly ['projectId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'project';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'projectMember';
+                    readonly columns: readonly ['userId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'user';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+              ];
+            };
+            readonly rooms: {
+              columns: {
+                readonly createdAt: {
+                  readonly dataType: 'pg/timestamptz';
+                  readonly codecId: 'pg/timestamptz-date@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                  readonly many: false;
+                };
+                readonly id: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly name: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly projectId: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly projectOwnerId: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly many: false;
+                };
+                readonly status: {
+                  readonly dataType: 'pg/text';
+                  readonly codecId: 'pg/text@1';
+                  readonly nullable: false;
+                  readonly default: {
+                    readonly kind: 'literal';
+                    readonly value: DefaultLiteralValue<'pg/text@1', 'ACTIVE'>;
+                  };
+                  readonly many: false;
+                };
+                readonly updatedAt: {
+                  readonly dataType: 'pg/timestamptz';
+                  readonly codecId: 'pg/timestamptz-date@1';
+                  readonly nullable: false;
+                  readonly default: { readonly kind: 'function'; readonly expression: 'now()' };
+                  readonly many: false;
+                };
+              };
+              primaryKey: { readonly columns: readonly ['id'] };
+              uniques: readonly [];
+              indexes: readonly [
+                {
+                  readonly name: 'rooms_projectId_idx_a96e4d92';
+                  readonly prefix: 'rooms_projectId_idx';
+                  readonly columns: readonly ['projectId'];
+                  readonly unique: false;
+                },
+                {
+                  readonly name: 'rooms_projectOwnerId_idx_ca18ad21';
+                  readonly prefix: 'rooms_projectOwnerId_idx';
+                  readonly columns: readonly ['projectOwnerId'];
+                  readonly unique: false;
+                },
+              ];
+              foreignKeys: readonly [
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'rooms';
+                    readonly columns: readonly ['projectId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'project';
+                    readonly columns: readonly ['id'];
+                  };
+                },
+                {
+                  readonly source: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'rooms';
+                    readonly columns: readonly ['projectOwnerId'];
+                  };
+                  readonly target: {
+                    readonly namespaceId: 'public' & NamespaceId;
+                    readonly tableName: 'user';
+                    readonly columns: readonly ['id'];
+                  };
                 },
               ];
             };
@@ -674,6 +1353,29 @@ type ContractBase = Omit<
             };
           };
           readonly valueSet: {
+            readonly DocumentLanguage: {
+              readonly kind: 'valueSet';
+              readonly values: readonly [
+                'JAVASCRIPT',
+                'PYTHON',
+                'TYPESCRIPT',
+                'JAVA',
+                'C',
+                'CPlus',
+              ];
+            };
+            readonly InvitationAccepted: {
+              readonly kind: 'valueSet';
+              readonly values: readonly ['ACCEPTED', 'PENDING', 'REJECTED'];
+            };
+            readonly ProjectMemberPermission: {
+              readonly kind: 'valueSet';
+              readonly values: readonly ['Maintainer'];
+            };
+            readonly RoomStatus: {
+              readonly kind: 'valueSet';
+              readonly values: readonly ['ACTIVE'];
+            };
             readonly UserRole: {
               readonly kind: 'valueSet';
               readonly values: readonly ['ADMIN', 'USER'];
@@ -690,6 +1392,24 @@ type ContractBase = Omit<
   readonly targetFamily: 'sql';
   readonly roots: {
     readonly account: { readonly namespace: 'public' & NamespaceId; readonly model: 'Account' };
+    readonly document: { readonly namespace: 'public' & NamespaceId; readonly model: 'Document' };
+    readonly documentState: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'DocumentState';
+    };
+    readonly invitation: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'Invitation';
+    };
+    readonly project: { readonly namespace: 'public' & NamespaceId; readonly model: 'Project' };
+    readonly projectMember: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'ProjectMember';
+    };
+    readonly rooms: {
+      readonly namespace: 'public' & NamespaceId;
+      readonly model: 'CollaborationRoom';
+    };
     readonly session: { readonly namespace: 'public' & NamespaceId; readonly model: 'Session' };
     readonly user: { readonly namespace: 'public' & NamespaceId; readonly model: 'User' };
     readonly verification: {
@@ -794,6 +1514,477 @@ type ContractBase = Omit<
                 readonly refreshToken: { readonly column: 'refreshToken' };
                 readonly refreshTokenExpiresAt: { readonly column: 'refreshTokenExpiresAt' };
                 readonly scope: { readonly column: 'scope' };
+                readonly updatedAt: { readonly column: 'updatedAt' };
+                readonly userId: { readonly column: 'userId' };
+              };
+            };
+          };
+          readonly CollaborationRoom: {
+            readonly fields: {
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-date@1';
+                };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly name: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly projectId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly projectOwnerId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly status: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly updatedAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-date@1';
+                };
+              };
+            };
+            readonly relations: {
+              readonly project: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Project';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['projectId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+              readonly projectOwner: {
+                readonly to: { readonly namespace: 'public' & NamespaceId; readonly model: 'User' };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['projectOwnerId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'rooms';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly createdAt: { readonly column: 'createdAt' };
+                readonly id: { readonly column: 'id' };
+                readonly name: { readonly column: 'name' };
+                readonly projectId: { readonly column: 'projectId' };
+                readonly projectOwnerId: { readonly column: 'projectOwnerId' };
+                readonly status: { readonly column: 'status' };
+                readonly updatedAt: { readonly column: 'updatedAt' };
+              };
+            };
+          };
+          readonly Document: {
+            readonly fields: {
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-date@1';
+                };
+              };
+              readonly createdById: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly language: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly name: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly roomId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly updatedAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-date@1';
+                };
+              };
+            };
+            readonly relations: {
+              readonly createdBy: {
+                readonly to: { readonly namespace: 'public' & NamespaceId; readonly model: 'User' };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['createdById'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+              readonly room: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'CollaborationRoom';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['roomId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+              readonly state: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'DocumentState';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['documentId'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'document';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly createdAt: { readonly column: 'createdAt' };
+                readonly createdById: { readonly column: 'createdById' };
+                readonly id: { readonly column: 'id' };
+                readonly language: { readonly column: 'language' };
+                readonly name: { readonly column: 'name' };
+                readonly roomId: { readonly column: 'roomId' };
+                readonly updatedAt: { readonly column: 'updatedAt' };
+              };
+            };
+          };
+          readonly DocumentState: {
+            readonly fields: {
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/timestamp-date@1' };
+              };
+              readonly documentId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly state: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/bytea@1' };
+              };
+              readonly updatedAt: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/timestamp-date@1' };
+              };
+            };
+            readonly relations: {
+              readonly document: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Document';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['documentId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'documentState';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly createdAt: { readonly column: 'createdAt' };
+                readonly documentId: { readonly column: 'documentId' };
+                readonly id: { readonly column: 'id' };
+                readonly state: { readonly column: 'state' };
+                readonly updatedAt: { readonly column: 'updatedAt' };
+              };
+            };
+          };
+          readonly Invitation: {
+            readonly fields: {
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-date@1';
+                };
+              };
+              readonly expiration: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-date@1';
+                };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly invitedById: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly inviteeEmailId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly projectId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly recipientId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly status: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly updatedAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-date@1';
+                };
+              };
+            };
+            readonly relations: {
+              readonly invitedBy: {
+                readonly to: { readonly namespace: 'public' & NamespaceId; readonly model: 'User' };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['invitedById'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+              readonly inviteeEmail: {
+                readonly to: { readonly namespace: 'public' & NamespaceId; readonly model: 'User' };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['inviteeEmailId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+              readonly project: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Project';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['projectId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+              readonly recipient: {
+                readonly to: { readonly namespace: 'public' & NamespaceId; readonly model: 'User' };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['recipientId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'invitation';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly createdAt: { readonly column: 'createdAt' };
+                readonly expiration: { readonly column: 'expiration' };
+                readonly id: { readonly column: 'id' };
+                readonly invitedById: { readonly column: 'invitedById' };
+                readonly inviteeEmailId: { readonly column: 'inviteeEmailId' };
+                readonly projectId: { readonly column: 'projectId' };
+                readonly recipientId: { readonly column: 'recipientId' };
+                readonly status: { readonly column: 'status' };
+                readonly updatedAt: { readonly column: 'updatedAt' };
+              };
+            };
+          };
+          readonly Project: {
+            readonly fields: {
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-date@1';
+                };
+              };
+              readonly description: {
+                readonly nullable: true;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly name: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly projectOwnerId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly updatedAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-date@1';
+                };
+              };
+            };
+            readonly relations: {
+              readonly collaborationRooms: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'CollaborationRoom';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['projectId'];
+                };
+              };
+              readonly projectMembers: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'ProjectMember';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['projectId'];
+                };
+              };
+              readonly projectOwner: {
+                readonly to: { readonly namespace: 'public' & NamespaceId; readonly model: 'User' };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['projectOwnerId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'project';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly createdAt: { readonly column: 'createdAt' };
+                readonly description: { readonly column: 'description' };
+                readonly id: { readonly column: 'id' };
+                readonly name: { readonly column: 'name' };
+                readonly projectOwnerId: { readonly column: 'projectOwnerId' };
+                readonly updatedAt: { readonly column: 'updatedAt' };
+              };
+            };
+          };
+          readonly ProjectMember: {
+            readonly fields: {
+              readonly createdAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-date@1';
+                };
+              };
+              readonly id: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly name: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly permission: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly projectId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly status: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+              readonly updatedAt: {
+                readonly nullable: false;
+                readonly type: {
+                  readonly kind: 'scalar';
+                  readonly codecId: 'pg/timestamptz-date@1';
+                };
+              };
+              readonly userId: {
+                readonly nullable: false;
+                readonly type: { readonly kind: 'scalar'; readonly codecId: 'pg/text@1' };
+              };
+            };
+            readonly relations: {
+              readonly project: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Project';
+                };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['projectId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+              readonly user: {
+                readonly to: { readonly namespace: 'public' & NamespaceId; readonly model: 'User' };
+                readonly cardinality: 'N:1';
+                readonly nullable: false;
+                readonly on: {
+                  readonly localFields: readonly ['userId'];
+                  readonly targetFields: readonly ['id'];
+                };
+              };
+            };
+            readonly storage: {
+              readonly table: 'projectMember';
+              readonly namespaceId: 'public';
+              readonly fields: {
+                readonly createdAt: { readonly column: 'createdAt' };
+                readonly id: { readonly column: 'id' };
+                readonly name: { readonly column: 'name' };
+                readonly permission: { readonly column: 'permission' };
+                readonly projectId: { readonly column: 'projectId' };
+                readonly status: { readonly column: 'status' };
                 readonly updatedAt: { readonly column: 'updatedAt' };
                 readonly userId: { readonly column: 'userId' };
               };
@@ -918,6 +2109,50 @@ type ContractBase = Omit<
                   readonly targetFields: readonly ['userId'];
                 };
               };
+              readonly collaborationRooms: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'CollaborationRoom';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['projectOwnerId'];
+                };
+              };
+              readonly documents: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Document';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['createdById'];
+                };
+              };
+              readonly projectmembers: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'ProjectMember';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['userId'];
+                };
+              };
+              readonly projects: {
+                readonly to: {
+                  readonly namespace: 'public' & NamespaceId;
+                  readonly model: 'Project';
+                };
+                readonly cardinality: '1:N';
+                readonly on: {
+                  readonly localFields: readonly ['id'];
+                  readonly targetFields: readonly ['projectOwnerId'];
+                };
+              };
               readonly sessions: {
                 readonly to: {
                   readonly namespace: 'public' & NamespaceId;
@@ -996,6 +2231,35 @@ type ContractBase = Omit<
           };
         };
         readonly enum: {
+          readonly DocumentLanguage: {
+            readonly codecId: 'pg/text@1';
+            readonly members: readonly [
+              { readonly name: 'JAVASCRIPT'; readonly value: 'JAVASCRIPT' },
+              { readonly name: 'PYTHON'; readonly value: 'PYTHON' },
+              { readonly name: 'TYPESCRIPT'; readonly value: 'TYPESCRIPT' },
+              { readonly name: 'JAVA'; readonly value: 'JAVA' },
+              { readonly name: 'C'; readonly value: 'C' },
+              { readonly name: 'CPlus'; readonly value: 'CPlus' },
+            ];
+          };
+          readonly InvitationAccepted: {
+            readonly codecId: 'pg/text@1';
+            readonly members: readonly [
+              { readonly name: 'ACCEPTED'; readonly value: 'ACCEPTED' },
+              { readonly name: 'PENDING'; readonly value: 'PENDING' },
+              { readonly name: 'REJECTED'; readonly value: 'REJECTED' },
+            ];
+          };
+          readonly ProjectMemberPermission: {
+            readonly codecId: 'pg/text@1';
+            readonly members: readonly [
+              { readonly name: 'Maintainer'; readonly value: 'Maintainer' },
+            ];
+          };
+          readonly RoomStatus: {
+            readonly codecId: 'pg/text@1';
+            readonly members: readonly [{ readonly name: 'ACTIVE'; readonly value: 'ACTIVE' }];
+          };
           readonly UserRole: {
             readonly codecId: 'pg/text@1';
             readonly members: readonly [
@@ -1005,6 +2269,23 @@ type ContractBase = Omit<
           };
         };
         readonly enumMemberTypes?: {
+          readonly DocumentLanguage: readonly [
+            { readonly name: 'JAVASCRIPT'; readonly value: 'JAVASCRIPT' },
+            { readonly name: 'PYTHON'; readonly value: 'PYTHON' },
+            { readonly name: 'TYPESCRIPT'; readonly value: 'TYPESCRIPT' },
+            { readonly name: 'JAVA'; readonly value: 'JAVA' },
+            { readonly name: 'C'; readonly value: 'C' },
+            { readonly name: 'CPlus'; readonly value: 'CPlus' },
+          ];
+          readonly InvitationAccepted: readonly [
+            { readonly name: 'ACCEPTED'; readonly value: 'ACCEPTED' },
+            { readonly name: 'PENDING'; readonly value: 'PENDING' },
+            { readonly name: 'REJECTED'; readonly value: 'REJECTED' },
+          ];
+          readonly ProjectMemberPermission: readonly [
+            { readonly name: 'Maintainer'; readonly value: 'Maintainer' },
+          ];
+          readonly RoomStatus: readonly [{ readonly name: 'ACTIVE'; readonly value: 'ACTIVE' }];
           readonly UserRole: readonly [
             { readonly name: 'ADMIN'; readonly value: 'ADMIN' },
             { readonly name: 'USER'; readonly value: 'USER' },
@@ -1041,6 +2322,61 @@ type ContractBase = Omit<
     };
   };
   readonly extensions: {};
+  readonly execution: {
+    readonly executionHash: ExecutionHash;
+    readonly mutations: {
+      readonly defaults: readonly [
+        {
+          readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'document';
+            readonly field: 'id';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'documentState';
+            readonly field: 'id';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'invitation';
+            readonly field: 'id';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'project';
+            readonly field: 'id';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'projectMember';
+            readonly field: 'id';
+            readonly namespace: 'public';
+          };
+        },
+        {
+          readonly onCreate: { readonly id: 'uuidv4'; readonly kind: 'generator' };
+          readonly ref: {
+            readonly entry: 'rooms';
+            readonly field: 'id';
+            readonly namespace: 'public';
+          };
+        },
+      ];
+    };
+  };
   readonly meta: {};
 
   readonly profileHash: ProfileHash;
