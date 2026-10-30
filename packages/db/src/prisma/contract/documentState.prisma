@@ -1,0 +1,15 @@
+// use prisma-8
+
+model DocumentState{
+  id            String        @id   @onCreate(uuid())
+  documentId String
+  document Document @relation(fields: [documentId], references: [id])
+  
+  state Bytes 
+  createdAt     TimestampJsDate @default(now())
+  updatedAt     TimestampJsDate @default(now())
+
+
+@@map("documentState")
+
+}

@@ -3,3 +3,26 @@ enum UserRole {
   ADMIN
   USER
 }
+enum ProjectMemberPermission{
+  Maintainer
+}
+
+enum DocumentLanguage{
+  JAVASCRIPT
+  PYTHON
+  TYPESCRIPT
+  JAVA
+  C
+  CPlus
+}
+enum RoomStatus{
+  ACTIVE
+}
+
+
+enum InvitationAccepted {
+  ACCEPTED
+  PENDING
+  REJECTED
+  
+}
