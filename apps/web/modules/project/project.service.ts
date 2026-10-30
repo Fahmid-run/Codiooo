@@ -40,6 +40,7 @@ export const projectServices = {
     ).create({
       name,
       description,
+      projectOwnerId,
     });
 
     return newProject;
