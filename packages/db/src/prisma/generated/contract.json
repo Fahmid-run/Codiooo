@@ -243,43 +243,43 @@
             "storage": {
               "fields": {
                 "accessToken": {
-                  "column": "accessToken"
+                  "column": "access_token"
                 },
                 "accessTokenExpiresAt": {
-                  "column": "accessTokenExpiresAt"
+                  "column": "access_token_expires_at"
                 },
                 "accountId": {
-                  "column": "accountId"
+                  "column": "account_id"
                 },
                 "createdAt": {
-                  "column": "createdAt"
+                  "column": "created_at"
                 },
                 "id": {
                   "column": "id"
                 },
                 "idToken": {
-                  "column": "idToken"
+                  "column": "id_token"
                 },
                 "password": {
                   "column": "password"
                 },
                 "providerId": {
-                  "column": "providerId"
+                  "column": "provider_id"
                 },
                 "refreshToken": {
-                  "column": "refreshToken"
+                  "column": "refresh_token"
                 },
                 "refreshTokenExpiresAt": {
-                  "column": "refreshTokenExpiresAt"
+                  "column": "refresh_token_expires_at"
                 },
                 "scope": {
                   "column": "scope"
                 },
                 "updatedAt": {
-                  "column": "updatedAt"
+                  "column": "updated_at"
                 },
                 "userId": {
-                  "column": "userId"
+                  "column": "user_id"
                 }
               },
               "namespaceId": "public",
@@ -1125,28 +1125,28 @@
             "storage": {
               "fields": {
                 "createdAt": {
-                  "column": "createdAt"
+                  "column": "created_at"
                 },
                 "expiresAt": {
-                  "column": "expiresAt"
+                  "column": "expires_at"
                 },
                 "id": {
                   "column": "id"
                 },
                 "ipAddress": {
-                  "column": "ipAddress"
+                  "column": "ip_address"
                 },
                 "token": {
                   "column": "token"
                 },
                 "updatedAt": {
-                  "column": "updatedAt"
+                  "column": "updated_at"
                 },
                 "userAgent": {
-                  "column": "userAgent"
+                  "column": "user_agent"
                 },
                 "userId": {
-                  "column": "userId"
+                  "column": "user_id"
                 }
               },
               "namespaceId": "public",
@@ -1300,13 +1300,13 @@
             "storage": {
               "fields": {
                 "createdAt": {
-                  "column": "createdAt"
+                  "column": "created_at"
                 },
                 "email": {
                   "column": "email"
                 },
                 "emailVerified": {
-                  "column": "emailVerified"
+                  "column": "email_verified"
                 },
                 "id": {
                   "column": "id"
@@ -1318,7 +1318,7 @@
                   "column": "name"
                 },
                 "updatedAt": {
-                  "column": "updatedAt"
+                  "column": "updated_at"
                 }
               },
               "namespaceId": "public",
@@ -1374,10 +1374,10 @@
             "storage": {
               "fields": {
                 "createdAt": {
-                  "column": "createdAt"
+                  "column": "created_at"
                 },
                 "expiresAt": {
-                  "column": "expiresAt"
+                  "column": "expires_at"
                 },
                 "id": {
                   "column": "id"
@@ -1386,7 +1386,7 @@
                   "column": "identifier"
                 },
                 "updatedAt": {
-                  "column": "updatedAt"
+                  "column": "updated_at"
                 },
                 "value": {
                   "column": "value"
@@ -1407,22 +1407,22 @@
           "table": {
             "account": {
               "columns": {
-                "accessToken": {
+                "access_token": {
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
                   "nullable": true
                 },
-                "accessTokenExpiresAt": {
+                "access_token_expires_at": {
                   "codecId": "pg/timestamptz-string@1",
                   "dataType": "pg/timestamptz",
                   "nullable": true
                 },
-                "accountId": {
+                "account_id": {
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
                   "nullable": false
                 },
-                "createdAt": {
+                "created_at": {
                   "codecId": "pg/timestamptz-string@1",
                   "dataType": "pg/timestamptz",
                   "default": {
@@ -1436,7 +1436,7 @@
                   "dataType": "pg/text",
                   "nullable": false
                 },
-                "idToken": {
+                "id_token": {
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
                   "nullable": true
@@ -1446,17 +1446,17 @@
                   "dataType": "pg/text",
                   "nullable": true
                 },
-                "providerId": {
+                "provider_id": {
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
                   "nullable": false
                 },
-                "refreshToken": {
+                "refresh_token": {
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
                   "nullable": true
                 },
-                "refreshTokenExpiresAt": {
+                "refresh_token_expires_at": {
                   "codecId": "pg/timestamptz-string@1",
                   "dataType": "pg/timestamptz",
                   "nullable": true
@@ -1466,12 +1466,12 @@
                   "dataType": "pg/text",
                   "nullable": true
                 },
-                "updatedAt": {
+                "updated_at": {
                   "codecId": "pg/timestamptz-string@1",
                   "dataType": "pg/timestamptz",
                   "nullable": false
                 },
-                "userId": {
+                "user_id": {
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
                   "nullable": false
@@ -1486,7 +1486,7 @@
                   "onDelete": "cascade",
                   "source": {
                     "columns": [
-                      "userId"
+                      "user_id"
                     ],
                     "namespaceId": "public",
                     "tableName": "account"
@@ -1503,7 +1503,7 @@
               "indexes": [
                 {
                   "columns": [
-                    "userId"
+                    "user_id"
                   ],
                   "name": "account_userId_idx",
                   "unique": false
@@ -2256,7 +2256,7 @@
             },
             "session": {
               "columns": {
-                "createdAt": {
+                "created_at": {
                   "codecId": "pg/timestamptz-string@1",
                   "dataType": "pg/timestamptz",
                   "default": {
@@ -2265,7 +2265,7 @@
                   },
                   "nullable": false
                 },
-                "expiresAt": {
+                "expires_at": {
                   "codecId": "pg/timestamptz-string@1",
                   "dataType": "pg/timestamptz",
                   "nullable": false
@@ -2275,7 +2275,7 @@
                   "dataType": "pg/text",
                   "nullable": false
                 },
-                "ipAddress": {
+                "ip_address": {
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
                   "nullable": true
@@ -2285,17 +2285,17 @@
                   "dataType": "pg/text",
                   "nullable": false
                 },
-                "updatedAt": {
+                "updated_at": {
                   "codecId": "pg/timestamptz-string@1",
                   "dataType": "pg/timestamptz",
                   "nullable": false
                 },
-                "userAgent": {
+                "user_agent": {
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
                   "nullable": true
                 },
-                "userId": {
+                "user_id": {
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
                   "nullable": false
@@ -2310,7 +2310,7 @@
                   "onDelete": "cascade",
                   "source": {
                     "columns": [
-                      "userId"
+                      "user_id"
                     ],
                     "namespaceId": "public",
                     "tableName": "session"
@@ -2327,7 +2327,7 @@
               "indexes": [
                 {
                   "columns": [
-                    "userId"
+                    "user_id"
                   ],
                   "name": "session_userId_idx",
                   "unique": false
@@ -2350,7 +2350,7 @@
             },
             "user": {
               "columns": {
-                "createdAt": {
+                "created_at": {
                   "codecId": "pg/timestamptz-string@1",
                   "dataType": "pg/timestamptz",
                   "default": {
@@ -2364,7 +2364,7 @@
                   "dataType": "pg/text",
                   "nullable": false
                 },
-                "emailVerified": {
+                "email_verified": {
                   "codecId": "pg/bool@1",
                   "dataType": "pg/bool",
                   "nullable": false
@@ -2384,7 +2384,7 @@
                   "dataType": "pg/text",
                   "nullable": false
                 },
-                "updatedAt": {
+                "updated_at": {
                   "codecId": "pg/timestamptz-string@1",
                   "dataType": "pg/timestamptz",
                   "default": {
@@ -2413,7 +2413,7 @@
             },
             "verification": {
               "columns": {
-                "createdAt": {
+                "created_at": {
                   "codecId": "pg/timestamptz-string@1",
                   "dataType": "pg/timestamptz",
                   "default": {
@@ -2422,7 +2422,7 @@
                   },
                   "nullable": false
                 },
-                "expiresAt": {
+                "expires_at": {
                   "codecId": "pg/timestamptz-string@1",
                   "dataType": "pg/timestamptz",
                   "nullable": false
@@ -2437,7 +2437,7 @@
                   "dataType": "pg/text",
                   "nullable": false
                 },
-                "updatedAt": {
+                "updated_at": {
                   "codecId": "pg/timestamptz-string@1",
                   "dataType": "pg/timestamptz",
                   "default": {
@@ -2516,7 +2516,7 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "7a72a2de0fb864ce727706916e1a1c345916b5670f0aa27ab95dde15f5d323b8"
+    "storageHash": "806b6f8c153e1c34b45351f56fe2cf091727dc8092a1aebd92ac7b0cce613ab7"
   },
   "execution": {
     "executionHash": "c3e0999a16cef41cb62115db36688ca9d21ac3580427e7c9ab78c7a1998c73f8",

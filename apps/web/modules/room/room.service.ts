@@ -1,21 +1,21 @@
 "use server";
 
-import { apiClient } from "@/lib/api-client";
+import { api } from "@/lib/api-client";
 
 export const roomServices = {
   async createRoom(data) {
-    return await apiClient("/rooms", {
+    return await api("/rooms", {
       method: "POST",
       body: data,
     });
   },
   async getRooms() {
-    return await apiClient("/rooms", {
+    return await api("/rooms", {
       method: "GET",
     });
   },
   async getRoomByid(id: string) {
-    return await apiClient(`/rooms/${id}`, {
+    return await api(`/rooms/${id}`, {
       method: "GET",
     });
   },
