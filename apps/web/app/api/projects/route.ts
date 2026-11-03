@@ -3,6 +3,7 @@ import { apiError, apiResponse } from "@/lib/utils";
 import { projectServices } from "../../../modules/project/project.service";
 import { getAuthUser } from "@/lib/get-auth-user";
 import { withAuth } from "@/lib/with-auth";
+import { createProjectSchema } from "../../../modules/project/project.schema";
 
 export async function GET(request: NextRequest) {
   try {
@@ -30,13 +31,15 @@ export const POST = withAuth(async (request: NextRequest, user) => {
   try {
     const payload = await request.json();
 
+    const validatedData = createProjectSchema.parse(payload);
+
     const projectOwnerId =
       user?.id ||
       (user as any)?.userId ||
       (user as any)?._id ||
       (user as any)?.sub;
     const project = await projectServices.createProject(
-      payload,
+      validatedData,
       projectOwnerId,
     );
     // 👀 ADD THESE LOGS TO YOUR TERMINAL 👀

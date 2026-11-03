@@ -9,6 +9,8 @@ export const createProjectSchema = z.object({
   description: z
     .string()
     .trim()
-    .max(280, "Descriptions must be 280 characters or fewer."),
+    .max(280, "Descriptions must be 280 characters or fewer.")
+    .optional()
+    .default(""),
 });
 export type CreateProjectInput = z.infer<typeof createProjectSchema>;
