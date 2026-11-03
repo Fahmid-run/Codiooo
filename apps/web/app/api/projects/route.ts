@@ -4,6 +4,7 @@ import { projectServices } from "../../../modules/project/project.service";
 import { getAuthUser } from "@/lib/get-auth-user";
 import { withAuth } from "@/lib/with-auth";
 import { createProjectSchema } from "../../../modules/project/project.schema";
+import { ZodError } from "zod";
 
 export async function GET(request: NextRequest) {
   try {
@@ -21,8 +22,6 @@ export async function GET(request: NextRequest) {
       status: 200,
     });
   } catch (error: any) {
-    console.error("Failed to fetch projects:", error);
-
     return apiError(error.message, 500, "Internal Server Error");
   }
 }
@@ -42,10 +41,7 @@ export const POST = withAuth(async (request: NextRequest, user) => {
       validatedData,
       projectOwnerId,
     );
-    // 👀 ADD THESE LOGS TO YOUR TERMINAL 👀
-    console.log("SERVER - Received Payload:", payload);
-    console.log("SERVER - Received User Object:", user);
-    console.log("SERVER - User ID:", user?.id);
+
     return apiResponse({
       success: true,
       message: "Project Created successfully",
@@ -53,7 +49,13 @@ export const POST = withAuth(async (request: NextRequest, user) => {
       status: 201,
     });
   } catch (error: any) {
-    console.error("Failed to create room:", error);
+    if (error instanceof ZodError) {
+      return apiError(JSON.stringify(error.issues), 400, "Validation Error");
+    }
+
+    if (error instanceof SyntaxError) {
+      return apiError("Invalid JSON body", 400, "Bad Request");
+    }
     return apiError(error.message, 500, "Internal Server Error");
   }
 });

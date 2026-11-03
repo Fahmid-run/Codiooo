@@ -52,7 +52,7 @@ export function ProjectCard({ project }: { project: Project }) {
 
   return (
     <article className="h-full">
-      <Card className="h-full gap-0 rounded-2xl border border-border/70 bg-card/90 py-0 shadow-none transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/35 hover:shadow-[0_24px_60px_-38px_rgba(0,0,0,0.9)]">
+      <Card className="h-full gap-0 rounded-2xl border border-border/70 bg-card/90 py-0 shadow-none transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/35 ">
         <div
           aria-hidden="true"
           className={cn(

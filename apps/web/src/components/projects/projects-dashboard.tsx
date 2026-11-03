@@ -19,11 +19,11 @@ import { ProjectCard } from "@/components/projects/project-card";
 import { WorkspaceNavigation } from "@/components/projects/workspace-navigation";
 import {
   initialProjects,
-  type CreateProjectInput,
   type Project,
   type WorkspaceSection,
 } from "@/lib/project";
 import { NewProjectCard } from "./new-project-card";
+import { CreateProjectInput } from "../../../modules/project/project.schema";
 
 export function ProjectsDashboard() {
   const [projects, setProjects] = useState<Project[]>(initialProjects);

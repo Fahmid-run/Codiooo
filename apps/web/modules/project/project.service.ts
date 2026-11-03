@@ -1,5 +1,6 @@
 import { apiError } from "@/lib/utils";
 import { db } from "@codiooo/db/src";
+import { CreateProjectInput } from "./project.schema";
 
 export const projectServices = {
   async getAllProject() {
@@ -22,17 +23,15 @@ export const projectServices = {
 
     return project;
   },
-  async createProject(payload: any, projectOwnerId: string) {
+  async createProject(payload: CreateProjectInput, projectOwnerId: string) {
     const { name, description } = payload;
 
     if (!projectOwnerId) {
-      throw new Error(projectOwnerId);
+      throw new Error("Project owner ID is required");
     }
     const newProject = await db.orm.public.Project.include(
       "projectOwner",
-      (owner) => {
-        owner.select("id", "name", "email");
-      },
+      (owner) => owner.select("id", "name", "email"),
     ).create({
       name,
       description,

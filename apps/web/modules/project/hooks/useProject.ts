@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "@/lib/api-client";
+import { CreateProjectInput } from "../project.schema";
 
 export const projectKeys = {
   all: ["projects"] as const,
@@ -15,25 +16,17 @@ export function useProjects() {
     },
   });
 }
-
 export function useCreateProject() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (
-      payload: { name: string; description: string },
-      projectOwnerId,
-    ) => {
+    mutationFn: async (payload: CreateProjectInput) => {
       const response = await api("/projects", {
         method: "POST",
         body: payload,
       });
 
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.message || "Failed to create project");
-      }
-      return data.data;
+      return response.data;
     },
 
     onSuccess: () => {
