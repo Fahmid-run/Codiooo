@@ -56,18 +56,12 @@ export function CreateProjectDialog({
     onSubmit: async ({ value }) => {
       const { data } = await authClient.getSession();
       const sessionId = data?.session?.id;
-      mutate(
-        {
-          payload: value,
-          projectOwnerId: sessionId,
+      mutate(value, {
+        onSuccess: () => {
+          form.reset();
+          onOpenChange(false);
         },
-        {
-          onSuccess: () => {
-            form.reset();
-            onOpenChange(false);
-          },
-        },
-      );
+      });
       console.log(value);
       form.reset();
       onOpenChange(false);
