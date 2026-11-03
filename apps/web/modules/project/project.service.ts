@@ -25,12 +25,8 @@ export const projectServices = {
   async createProject(payload: any, projectOwnerId: string) {
     const { name, description } = payload;
 
-    if (!name || !description || !projectOwnerId) {
-      return apiError(
-        "Missing required fields: name, projectId, or projectOwnerId",
-        400,
-        "Bad Request",
-      );
+    if (!projectOwnerId) {
+      throw new Error(projectOwnerId);
     }
     const newProject = await db.orm.public.Project.include(
       "projectOwner",

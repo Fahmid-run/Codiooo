@@ -20,6 +20,11 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { createProjectSchema } from "../../../modules/project/project.schema";
+import { useCreateProject } from "../../../modules/project/hooks/useProject";
+import { toast } from "../ui/toast";
+import { getApiErrorMessage } from "@/lib/get-api-errormsg";
+import { authClient } from "@/lib/auth-client";
 
 export function CreateProjectDialog({
   open,
@@ -30,6 +35,8 @@ export function CreateProjectDialog({
   onOpenChange: (open: boolean) => void;
   onCreate: (project) => void;
 }) {
+  const { mutate, isPending } = useCreateProject();
+
   const form = useForm({
     defaultValues: {
       name: "",
@@ -38,10 +45,30 @@ export function CreateProjectDialog({
     validators: {
       // onBlur: createProjectSchema,
       // onChange: createProjectSchema,
-      // onSubmit: createProjectSchema,
+      onSubmit: createProjectSchema,
     },
-    onSubmit: ({ value }) => {
-      // onCreate(createProjectSchema.safeparse(value));
+    onSubmitInvalid: ({ value, formApi }) => {
+      toast.add({
+        title: getApiErrorMessage(formApi.state.errors),
+        type: "error",
+      });
+    },
+    onSubmit: async ({ value }) => {
+      const { data } = await authClient.getSession();
+      const sessionId = data?.session?.id;
+      mutate(
+        {
+          payload: value,
+          projectOwnerId: sessionId,
+        },
+        {
+          onSuccess: () => {
+            form.reset();
+            onOpenChange(false);
+          },
+        },
+      );
+      console.log(value);
       form.reset();
       onOpenChange(false);
     },

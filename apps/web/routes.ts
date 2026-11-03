@@ -6,4 +6,4 @@ export const apiAuthPrefix: string = "/auth";
 
 export const defaultLoginRedirect: string = "/";
 
-export const protectedRoute: string[] = ["/editor"];
+export const protectedRoute: string[] = ["/editor", "/projects"];

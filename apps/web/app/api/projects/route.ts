@@ -29,8 +29,20 @@ export async function GET(request: NextRequest) {
 export const POST = withAuth(async (request: NextRequest, user) => {
   try {
     const payload = await request.json();
-    const project = await projectServices.createProject(payload, user.id);
 
+    const projectOwnerId =
+      user?.id ||
+      (user as any)?.userId ||
+      (user as any)?._id ||
+      (user as any)?.sub;
+    const project = await projectServices.createProject(
+      payload,
+      projectOwnerId,
+    );
+    // 👀 ADD THESE LOGS TO YOUR TERMINAL 👀
+    console.log("SERVER - Received Payload:", payload);
+    console.log("SERVER - Received User Object:", user);
+    console.log("SERVER - User ID:", user?.id);
     return apiResponse({
       success: true,
       message: "Project Created successfully",
