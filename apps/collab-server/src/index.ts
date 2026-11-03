@@ -3,11 +3,15 @@ import { Server } from "@hocuspocus/server";
 const server = new Server({
   port: 1234,
 
-  async onConnect({ documentName }: { documentName: any }) {
-    console.log(`Client connected to room: ${documentName}`);
+  async onConnect({ documentName }) {
+    console.log(`Connected to room: ${documentName}`);
+  },
+
+  async onDisconnect({ documentName }) {
+    console.log(`Disconnected from room: ${documentName}`);
   },
 });
 
 server.listen();
 
-console.log("Collab server running on port 1234");
+console.log("Collaboration server running on ws://localhost:1234");
