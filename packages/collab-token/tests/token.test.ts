@@ -2,13 +2,13 @@ import { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { SignJWT } from "jose";
 
-import { CollabTokenError } from "../utils/throwError";
 import {
+  CollabTokenError,
   COLLAB_TOKEN_AUDIENCE,
   COLLAB_TOKEN_ISSUER,
   signCollabToken,
   verifyCollabToken,
-} from "..";
+} from "../index";
 
 const SECRET = "test-secret-that-is-at-least-32-chars-long";
 const OTHER_SECRET = "different-secret-that-is-at-least-32-chars";

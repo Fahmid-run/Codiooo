@@ -21,6 +21,17 @@ import {
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { createProjectSchema } from "../../../modules/project/project.schema";
+import { z } from "zod";
+
+// Form state always carries a description string; the shared schema
+// accepts an optional one for the API contract, so the form validates
+// against a required-description view with identical rules.
+const createProjectFormSchema = createProjectSchema.extend({
+  description: z
+    .string()
+    .trim()
+    .max(280, "Descriptions must be 280 characters or fewer."),
+});
 import { useCreateProject } from "../../../modules/project/hooks/useProject";
 import { toast } from "../ui/toast";
 import { getApiErrorMessage } from "@/lib/get-api-errormsg";
@@ -40,9 +51,7 @@ export function CreateProjectDialog({
       description: "",
     },
     validators: {
-      // onBlur: createProjectSchema,
-      // onChange: createProjectSchema,
-      onSubmit: createProjectSchema,
+      onSubmit: createProjectFormSchema,
     },
     onSubmitInvalid: ({ value, formApi }) => {
       toast.add({

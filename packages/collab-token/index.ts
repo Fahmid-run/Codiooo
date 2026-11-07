@@ -1,19 +1,35 @@
-import { SignJWT, jwtVerify } from "jose";
-import {
-  CollabTokenErrorCode,
-  CollabTokenPayload,
-  SignCollabTokenInput,
-} from "./types";
 import { randomUUID } from "node:crypto";
+import { SignJWT, jwtVerify } from "jose";
 
-export const COLLAB_TOKEN_ISSUER = process.env.COLLAB_TOKEN_ISSUER as string;
-export const COLLAB_TOKEN_AUDIENCE = process.env
-  .COLLAB_TOKEN_AUDIENCE as string;
-export const COLLAB_TOKEN_TTL_SECONDS = parseInt(
-  process.env.COLLAB_TOKEN_TTL_SECONDS || "300",
-);
-export const COLLAB_TOKEN_ALGORITHM = process.env
-  .COLLAB_TOKEN_ALGORITHM as string;
+/**
+ * Shared collaboration JWT implementation.
+ *
+ * The web application issues tokens; the collaboration server verifies
+ * them. Both sides import this package so signing and verification can
+ * never drift apart. The signing secret (COLLAB_TOKEN_SECRET) is shared
+ * between the two processes and never leaves them.
+ */
+
+export const COLLAB_TOKEN_ISSUER = "codiooo-web";
+export const COLLAB_TOKEN_AUDIENCE = "codiooo-collab";
+export const COLLAB_TOKEN_TTL_SECONDS = 300;
+export const COLLAB_TOKEN_ALGORITHM = "HS256" as const;
+
+export interface CollabTokenPayload {
+  sub: string;
+  roomId: string;
+  iss: typeof COLLAB_TOKEN_ISSUER;
+  aud: typeof COLLAB_TOKEN_AUDIENCE;
+  iat: number;
+  exp: number;
+  jti: string;
+}
+
+export type CollabTokenErrorCode =
+  | "expired"
+  | "invalid"
+  | "wrong-room"
+  | "missing-claims";
 
 export class CollabTokenError extends Error {
   readonly code: CollabTokenErrorCode;
@@ -33,6 +49,11 @@ function secretKey(secret: string): Uint8Array {
     );
   }
   return new TextEncoder().encode(secret);
+}
+
+export interface SignCollabTokenInput {
+  userId: string;
+  roomId: string;
 }
 
 export async function signCollabToken(

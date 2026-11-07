@@ -17,7 +17,6 @@
     "@codiooo/db": "workspace:*",
     "@hocuspocus/provider": "^4.7.1",
     "@monaco-editor/react": "^4.7.0",
-    "@repo/ui": "workspace:*",
     "@tailwindcss/postcss": "^4.3.3",
     "@tanstack/react-form": "^1.33.5",
     "@tanstack/react-form-nextjs": "^1.33.5",

@@ -475,7 +475,7 @@ export default function CodeLabWorkspace() {
 
       <div className="min-h-0 flex-1 pt-3">
         <ResizablePanelGroup
-          direction="horizontal"
+          orientation="horizontal"
           className="h-full min-h-0 rounded-lg border border-zinc-800"
         >
           {/* Explorer */}
@@ -587,7 +587,7 @@ export default function CodeLabWorkspace() {
           {/* Preview and terminal must be children of a vertical group. */}
           <ResizablePanel defaultSize={35} minSize={22}>
             <ResizablePanelGroup
-              direction="vertical"
+              orientation="vertical"
               className="h-full min-h-0"
             >
               <ResizablePanel defaultSize={62} minSize={25}>
