@@ -1,58 +1,41 @@
-import { NextRequest, NextResponse } from "next/server";
-import { db } from "@codiooo/db/src";
-import { apiError, apiResponse } from "@/lib/utils";
+import type { NextRequest } from "next/server";
+import { apiError, apiResponse, handleApiError } from "@/lib/utils";
+import { withAuth } from "@/lib/with-auth";
+import { createRoomSchema } from "../../../modules/room/room.schema";
+import { roomServices } from "../../../modules/room/room.service";
 
-export async function GET(request: NextRequest) {
+export const GET = withAuth(async (request: NextRequest, user) => {
   try {
-    const rooms = await db.orm.public.CollaborationRoom.include("project")
-      .include("projectOwner", (owner) => owner.select("id", "name", "email"))
-      .orderBy((room) => room.createdAt.desc())
-      .all();
+    const rooms = await roomServices.getRoomsForUser(user.id);
 
     return apiResponse({
       success: true,
-      message: "Room Retrieved successfully",
+      message: "Rooms Retrieved successfully",
       data: rooms,
       status: 200,
     });
-  } catch (error: any) {
-    console.error("Failed to fetch rooms:", error);
-
-    return apiError(error.message, 500, "Internal Server Error");
+  } catch (error) {
+    return handleApiError(error);
   }
-}
+});
 
-export async function POST(request: NextRequest) {
+export const POST = withAuth(async (request: NextRequest, user) => {
   try {
-    const body = await request.json();
-    const { name, projectId, projectOwnerId } = body;
+    const payload = createRoomSchema.parse(await request.json());
 
-    if (!name || !projectId || !projectOwnerId) {
-      return NextResponse.json(
-        {
-          error: "Bad Request",
-          message:
-            "Missing required fields: name, projectId, or projectOwnerId",
-        },
-        { status: 400 },
-      );
+    const result = await roomServices.createRoomForUser(payload, user.id);
+
+    if (result === "forbidden") {
+      return apiError("Project not found", 404);
     }
 
-    const newRoom = await db.orm.public.CollaborationRoom.include(
-      "project",
-    ).create({
-      name,
-      projectId,
-      projectOwnerId,
-    });
     return apiResponse({
       success: true,
       message: "Room Created successfully",
-      data: newRoom,
+      data: result,
       status: 201,
     });
-  } catch (error: any) {
-    console.error("Failed to create room:", error);
-    return apiError(error.message, 500, "Internal Server Error");
+  } catch (error) {
+    return handleApiError(error);
   }
-}
+});

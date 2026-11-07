@@ -17,6 +17,28 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // Defense in depth: private API routes require a verified session.
+  // Per-route authorization remains the source of truth.
+  if (pathname.startsWith("/api/")) {
+    const session = await auth.api.getSession({
+      headers: request.headers,
+    });
+
+    if (!session?.user) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Unauthorized",
+          data: null,
+          errors: null,
+        },
+        { status: 401 },
+      );
+    }
+
+    return NextResponse.next();
+  }
+
   const isProtectedRoute = protectedRoute.some(
     (route) => pathname === route || pathname.startsWith(`${route}/`),
   );
@@ -49,5 +71,8 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!api/auth|_next/static|_next/image|favicon.ico|.*\\..*).*)"],
+  matcher: [
+    "/((?!api/auth|_next/static|_next/image|favicon.ico|.*\\..*).*)",
+    "/api/:path*",
+  ],
 };
