@@ -1,5 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  turbo: {
+    resolveAlias: {
+      "monaco-editor/esm/vs/editor/editor.api.js": "monaco-editor",
+    },
+  },
   async headers() {
     return [
       {
