@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useForm } from "@tanstack/react-form";
+import { toast } from "sonner";
 import { loginSchema } from "@/schema/authSchema";
 import { authClient } from "@/lib/auth-client";
 
@@ -26,16 +27,16 @@ export function LoginForm({
   ...props
 }: React.ComponentProps<"div">) {
   const handleGithub = async () => {
-    await authClient.signIn.social({
+    const { error } = await authClient.signIn.social({
       provider: "github",
-
       callbackURL: "/editor",
-
       errorCallbackURL: "/error",
-
-      newUserCallbackURL: "/welcome",
-      // disableRedirect: true,
+      newUserCallbackURL: "/editor",
     });
+
+    if (error) {
+      toast.error(error.message ?? "GitHub sign-in failed.");
+    }
   };
   const form = useForm({
     defaultValues: {
@@ -48,21 +49,15 @@ export function LoginForm({
     onSubmit: async ({ value }) => {
       const { email, password } = value;
 
-      try {
-        const { data, error } = await authClient.signIn.email({
-          email,
-          password,
-          callbackURL: "/dashboard",
-          rememberMe: false,
-        });
+      const { error } = await authClient.signIn.email({
+        email,
+        password,
+        callbackURL: "/editor",
+      });
 
-        if (error) {
-          console.error("Login error:", error);
-          return;
-        }
-
-        console.log("Login successful:", data);
-      } catch (error) {}
+      if (error) {
+        toast.error(error.message ?? "Invalid email or password.");
+      }
     },
   });
 
@@ -139,7 +134,8 @@ export function LoginForm({
                   Login with Github
                 </Button>
                 <FieldDescription className="text-center">
-                  Don&apos;t have an account? <a href="#">Sign up</a>
+                  Don&apos;t have an account?{" "}
+                  <a href="/auth/sign-up">Sign up</a>
                 </FieldDescription>
               </Field>
             </FieldGroup>

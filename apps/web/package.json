@@ -9,7 +9,7 @@
     "start": "next start",
     "lint": "eslint --max-warnings 0",
     "check-types": "next typegen && tsc --noEmit",
-    "test": "tsx --test tests/security.test.ts"
+    "test": "tsx --test tests/security.test.ts tests/auth.test.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",
