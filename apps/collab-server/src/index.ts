@@ -1,17 +1,11 @@
-import { Server } from "@hocuspocus/server";
+import { config } from "./env.js";
+import { createCollabServer } from "./server.js";
 
-const server = new Server({
-  port: 1234,
-
-  async onConnect({ documentName }) {
-    console.log(`Connected to room: ${documentName}`);
-  },
-
-  async onDisconnect({ documentName }) {
-    console.log(`Disconnected from room: ${documentName}`);
-  },
+const server = createCollabServer({
+  port: config.port,
+  collabTokenSecret: config.collabTokenSecret,
 });
 
-server.listen();
+server.listen(config.port);
 
-console.log("Collaboration server running on ws://localhost:1234");
+console.log(`Collaboration server running on ws://localhost:${config.port}`);

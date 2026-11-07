@@ -4,14 +4,21 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "tsx watch src/index.ts",
-    "start": "tsx src/index.ts"
+    "dev": "tsx watch --env-file=.env src/index.ts",
+    "start": "tsx --env-file=.env src/index.ts",
+    "test": "tsx --test tests/collab.test.ts"
   },
   "dependencies": {
-    "@hocuspocus/server": "latest"
+    "@codiooo/collab-token": "workspace:*",
+    "@codiooo/db": "workspace:*",
+    "@hocuspocus/server": "latest",
+    "yjs": "^13.6.33"
   },
   "devDependencies": {
+    "@hocuspocus/provider": "latest",
     "@types/node": "latest",
+    "jose": "^6.2.13",
+    "pg": "^8.23.1",
     "tsx": "latest",
     "typescript": "latest"
   }

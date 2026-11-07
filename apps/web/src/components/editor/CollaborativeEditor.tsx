@@ -1,14 +1,34 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Editor from "@monaco-editor/react";
 import * as Y from "yjs";
 import { MonacoBinding } from "y-monaco";
 import { HocuspocusProvider } from "@hocuspocus/provider";
 import type { editor } from "monaco-editor";
+import { api } from "@/lib/api-client";
+import { authClient } from "@/lib/auth-client";
+import { toast } from "@/components/ui/toast";
 
 interface Props {
   roomId: string;
+}
+
+const awarenessColors = [
+  "#22c55e",
+  "#3b82f6",
+  "#a855f7",
+  "#f59e0b",
+  "#ef4444",
+  "#14b8a6",
+];
+
+function colorForUser(userId: string) {
+  let hash = 0;
+  for (let i = 0; i < userId.length; i++) {
+    hash = (hash * 31 + userId.charCodeAt(i)) >>> 0;
+  }
+  return awarenessColors[hash % awarenessColors.length] as string;
 }
 
 export default function CollaborativeEditor({ roomId }: Props) {
@@ -17,21 +37,35 @@ export default function CollaborativeEditor({ roomId }: Props) {
 
   const [connected, setConnected] = useState(false);
   const [users, setUsers] = useState(0);
+  const [authError, setAuthError] = useState<string | null>(null);
+  const { data: session } = authClient.useSession();
+  const sessionRef = useRef(session);
+  sessionRef.current = session;
 
   useEffect(() => {
     if (!editorInstance) return;
 
     const ydoc = new Y.Doc();
 
+    const fetchCollabToken = async () => {
+      const response = await api<{ data: { token: string } }>(
+        `/rooms/${roomId}/token`,
+        { method: "GET" },
+      );
+      return response.data.token;
+    };
+
     const provider = new HocuspocusProvider({
       url: process.env.NEXT_PUBLIC_COLLAB_URL || "ws://localhost:1234",
       name: roomId,
       document: ydoc,
+      token: async () => fetchCollabToken(),
     });
 
+    const currentUser = sessionRef.current?.user;
     provider.awareness?.setLocalStateField("user", {
-      name: "Anonymous",
-      color: "#22c55e",
+      name: currentUser?.name ?? "Collaborator",
+      color: currentUser ? colorForUser(currentUser.id) : "#22c55e",
     });
 
     const yText = ydoc.getText("monaco");
@@ -54,11 +88,21 @@ export default function CollaborativeEditor({ roomId }: Props) {
       setUsers(provider.awareness?.getStates().size ?? 0);
     };
 
+    const onAuthenticationFailed = () => {
+      setAuthError("You don't have access to this room.");
+      toast.add({
+        title: "Could not join this room: access denied or token expired.",
+        type: "error",
+      });
+    };
+
     provider.on("status", onStatus);
+    provider.on("authenticationFailed", onAuthenticationFailed);
     provider.awareness?.on("change", onAwarenessChange);
 
     return () => {
       provider.off("status", onStatus);
+      provider.off("authenticationFailed", onAuthenticationFailed);
       provider.awareness?.off("change", onAwarenessChange);
       binding?.destroy();
       provider.destroy();
@@ -76,9 +120,13 @@ export default function CollaborativeEditor({ roomId }: Props) {
 
         <div className="flex items-center gap-4 text-xs">
           <span className="text-gray-400">{users} online</span>
-          <span className={connected ? "text-green-400" : "text-yellow-400"}>
-            {connected ? "Connected" : "Connecting"}
-          </span>
+          {authError ? (
+            <span className="text-red-400">{authError}</span>
+          ) : (
+            <span className={connected ? "text-green-400" : "text-yellow-400"}>
+              {connected ? "Connected" : "Connecting"}
+            </span>
+          )}
         </div>
       </header>
 

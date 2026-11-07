@@ -28,6 +28,7 @@ const VALID_ENV = {
   BETTER_AUTH_URL: "http://localhost:3000",
   GITHUB_CLIENT_ID: "github-id",
   GITHUB_CLIENT_SECRET: "github-secret",
+  COLLAB_TOKEN_SECRET: "test-collab-secret-that-is-at-least-32-chars",
 };
 
 describe("server environment validation", () => {
