@@ -20,13 +20,31 @@ importers:
 
   apps/collab-server:
     dependencies:
+      '@codiooo/collab-token':
+        specifier: workspace:*
+        version: link:../../packages/collab-token
+      '@codiooo/db':
+        specifier: workspace:*
+        version: link:../../packages/db
       '@hocuspocus/server':
         specifier: latest
         version: 4.8.0(y-protocols@1.0.7(yjs@13.6.33))(yjs@13.6.33)
+      yjs:
+        specifier: ^13.6.33
+        version: 13.6.33
     devDependencies:
+      '@hocuspocus/provider':
+        specifier: latest
+        version: 4.8.0(y-protocols@1.0.7(yjs@13.6.33))(yjs@13.6.33)
       '@types/node':
         specifier: latest
         version: 26.6.6
+      jose:
+        specifier: ^6.2.13
+        version: 6.2.13
+      pg:
+        specifier: ^8.23.1
+        version: 8.23.1
       tsx:
         specifier: latest
         version: 4.23.15
@@ -76,6 +94,9 @@ importers:
       '@base-ui/react':
         specifier: ^1.9.0
         version: 1.9.0(@types/react@19.2.18)(react-dom@19.2.8(react@19.2.8))(react@19.2.8)
+      '@codiooo/collab-token':
+        specifier: workspace:*
+        version: link:../../packages/collab-token
       '@codiooo/db':
         specifier: workspace:*
         version: link:../../packages/db
@@ -202,6 +223,22 @@ importers:
         version: 10.9.1(jiti@2.7.0)(supports-color@7.2.0)
       typescript:
         specifier: 7.0.2
+        version: 7.0.2
+
+  packages/collab-token:
+    dependencies:
+      jose:
+        specifier: ^6.2.13
+        version: 6.2.13
+    devDependencies:
+      '@types/node':
+        specifier: ^26.6.5
+        version: 26.6.6
+      tsx:
+        specifier: ^4.23.15
+        version: 4.23.15
+      typescript:
+        specifier: ^7.0.2
         version: 7.0.2
 
   packages/db:
@@ -1138,6 +1175,12 @@ packages:
 
   '@hocuspocus/provider@4.7.1':
     resolution: {integrity: sha512-znulqyCwwuhq86aFmTF6izOomwRWlZGReCAf+SZpLgpvdfvBQJzjoj9HdtuXXfL9wkBM2Ydt86kaMs2rjaicRA==}
+    peerDependencies:
+      y-protocols: ^1.0.6
+      yjs: ^13.6.8
+
+  '@hocuspocus/provider@4.8.0':
+    resolution: {integrity: sha512-WUwwu3W55n0fkMF1uYhx4WXlRjJ/t7OjsxiuzTMMQGDvvZrZA37CAysdqc7JXLVmN6A5IIWadE921pxN9/JotA==}
     peerDependencies:
       y-protocols: ^1.0.6
       yjs: ^13.6.8
@@ -6423,6 +6466,14 @@ snapshots:
   '@hocuspocus/provider@4.7.1(y-protocols@1.0.7(yjs@13.6.33))(yjs@13.6.33)':
     dependencies:
       '@hocuspocus/common': 4.7.1
+      '@lifeomic/attempt': 3.1.0
+      lib0: 0.2.119
+      y-protocols: 1.0.7(yjs@13.6.33)
+      yjs: 13.6.33
+
+  '@hocuspocus/provider@4.8.0(y-protocols@1.0.7(yjs@13.6.33))(yjs@13.6.33)':
+    dependencies:
+      '@hocuspocus/common': 4.8.0
       '@lifeomic/attempt': 3.1.0
       lib0: 0.2.119
       y-protocols: 1.0.7(yjs@13.6.33)
