@@ -8,6 +8,10 @@
       "model": "Account",
       "namespace": "public"
     },
+    "collaboration_rooms": {
+      "model": "CollaborationRoom",
+      "namespace": "public"
+    },
     "document": {
       "model": "Document",
       "namespace": "public"
@@ -24,12 +28,8 @@
       "model": "Project",
       "namespace": "public"
     },
-    "projectMember": {
+    "project_member": {
       "model": "ProjectMember",
-      "namespace": "public"
-    },
-    "rooms": {
-      "model": "CollaborationRoom",
       "namespace": "public"
     },
     "session": {
@@ -78,7 +78,7 @@
               }
             ]
           },
-          "InvitationAccepted": {
+          "InvitationStatus": {
             "codecId": "pg/text@1",
             "members": [
               {
@@ -403,7 +403,7 @@
                 }
               },
               "namespaceId": "public",
-              "table": "rooms"
+              "table": "collaboration_rooms"
             }
           },
           "Document": {
@@ -678,7 +678,7 @@
                 },
                 "valueSet": {
                   "entityKind": "enum",
-                  "entityName": "InvitationAccepted",
+                  "entityName": "InvitationStatus",
                   "namespaceId": "public",
                   "plane": "domain"
                 }
@@ -925,13 +925,6 @@
                   "kind": "scalar"
                 }
               },
-              "name": {
-                "nullable": false,
-                "type": {
-                  "codecId": "pg/text@1",
-                  "kind": "scalar"
-                }
-              },
               "permission": {
                 "nullable": false,
                 "type": {
@@ -1022,9 +1015,6 @@
                 "id": {
                   "column": "id"
                 },
-                "name": {
-                  "column": "name"
-                },
                 "permission": {
                   "column": "permission"
                 },
@@ -1042,7 +1032,7 @@
                 }
               },
               "namespaceId": "public",
-              "table": "projectMember"
+              "table": "project_member"
             }
           },
           "Session": {
@@ -1251,7 +1241,7 @@
                   "namespace": "public"
                 }
               },
-              "projectmembers": {
+              "projectMembers": {
                 "cardinality": "1:N",
                 "on": {
                   "localFields": [
@@ -1469,6 +1459,10 @@
                 "updated_at": {
                   "codecId": "pg/timestamptz-string@1",
                   "dataType": "pg/timestamptz",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
                   "nullable": false
                 },
                 "user_id": {
@@ -1514,6 +1508,134 @@
                   "id"
                 ],
                 "name": "account_pkey"
+              },
+              "uniques": []
+            },
+            "collaboration_rooms": {
+              "checks": [
+                {
+                  "expression": "\"status\" IN ('ACTIVE')",
+                  "name": "collaboration_rooms_status_check_1644acb1",
+                  "prefix": "collaboration_rooms_status_check"
+                }
+              ],
+              "columns": {
+                "createdAt": {
+                  "codecId": "pg/timestamptz-date@1",
+                  "dataType": "pg/timestamptz",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nullable": false
+                },
+                "id": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "name": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "projectId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "projectOwnerId": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "nullable": false
+                },
+                "status": {
+                  "codecId": "pg/text@1",
+                  "dataType": "pg/text",
+                  "default": {
+                    "kind": "literal",
+                    "value": "ACTIVE"
+                  },
+                  "nullable": false,
+                  "valueSet": {
+                    "entityKind": "valueSet",
+                    "entityName": "RoomStatus",
+                    "namespaceId": "public",
+                    "plane": "storage"
+                  }
+                },
+                "updatedAt": {
+                  "codecId": "pg/timestamptz-date@1",
+                  "dataType": "pg/timestamptz",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
+                  "nullable": false
+                }
+              },
+              "foreignKeys": [
+                {
+                  "index": {
+                    "name": "collaboration_rooms_projectId_idx_a96e4d92"
+                  },
+                  "source": {
+                    "columns": [
+                      "projectId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "collaboration_rooms"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "project"
+                  }
+                },
+                {
+                  "index": {
+                    "name": "collaboration_rooms_projectOwnerId_idx_ca18ad21"
+                  },
+                  "source": {
+                    "columns": [
+                      "projectOwnerId"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "collaboration_rooms"
+                  },
+                  "target": {
+                    "columns": [
+                      "id"
+                    ],
+                    "namespaceId": "public",
+                    "tableName": "user"
+                  }
+                }
+              ],
+              "indexes": [
+                {
+                  "columns": [
+                    "projectId"
+                  ],
+                  "name": "collaboration_rooms_projectId_idx_a96e4d92",
+                  "prefix": "collaboration_rooms_projectId_idx",
+                  "unique": false
+                },
+                {
+                  "columns": [
+                    "projectOwnerId"
+                  ],
+                  "name": "collaboration_rooms_projectOwnerId_idx_ca18ad21",
+                  "prefix": "collaboration_rooms_projectOwnerId_idx",
+                  "unique": false
+                }
+              ],
+              "primaryKey": {
+                "columns": [
+                  "id"
+                ]
               },
               "uniques": []
             },
@@ -1593,7 +1715,7 @@
                       "id"
                     ],
                     "namespaceId": "public",
-                    "tableName": "rooms"
+                    "tableName": "collaboration_rooms"
                   }
                 },
                 {
@@ -1639,7 +1761,14 @@
                   "id"
                 ]
               },
-              "uniques": []
+              "uniques": [
+                {
+                  "columns": [
+                    "roomId",
+                    "name"
+                  ]
+                }
+              ]
             },
             "documentState": {
               "columns": {
@@ -1680,8 +1809,11 @@
               "foreignKeys": [
                 {
                   "index": {
-                    "name": "documentState_documentId_idx_825ef746"
+                    "unique": [
+                      "documentId"
+                    ]
                   },
+                  "onDelete": "cascade",
                   "source": {
                     "columns": [
                       "documentId"
@@ -1698,22 +1830,19 @@
                   }
                 }
               ],
-              "indexes": [
-                {
-                  "columns": [
-                    "documentId"
-                  ],
-                  "name": "documentState_documentId_idx_825ef746",
-                  "prefix": "documentState_documentId_idx",
-                  "unique": false
-                }
-              ],
+              "indexes": [],
               "primaryKey": {
                 "columns": [
                   "id"
                 ]
               },
-              "uniques": []
+              "uniques": [
+                {
+                  "columns": [
+                    "documentId"
+                  ]
+                }
+              ]
             },
             "invitation": {
               "checks": [
@@ -1769,7 +1898,7 @@
                   "nullable": false,
                   "valueSet": {
                     "entityKind": "valueSet",
-                    "entityName": "InvitationAccepted",
+                    "entityName": "InvitationStatus",
                     "namespaceId": "public",
                     "plane": "storage"
                   }
@@ -1982,17 +2111,17 @@
               },
               "uniques": []
             },
-            "projectMember": {
+            "project_member": {
               "checks": [
                 {
                   "expression": "\"permission\" IN ('Maintainer')",
-                  "name": "projectMember_permission_check_d8fd70dd",
-                  "prefix": "projectMember_permission_check"
+                  "name": "project_member_permission_check_d8fd70dd",
+                  "prefix": "project_member_permission_check"
                 },
                 {
                   "expression": "\"status\" IN ('ACTIVE')",
-                  "name": "projectMember_status_check_1644acb1",
-                  "prefix": "projectMember_status_check"
+                  "name": "project_member_status_check_1644acb1",
+                  "prefix": "project_member_status_check"
                 }
               ],
               "columns": {
@@ -2006,11 +2135,6 @@
                   "nullable": false
                 },
                 "id": {
-                  "codecId": "pg/text@1",
-                  "dataType": "pg/text",
-                  "nullable": false
-                },
-                "name": {
                   "codecId": "pg/text@1",
                   "dataType": "pg/text",
                   "nullable": false
@@ -2064,14 +2188,14 @@
               "foreignKeys": [
                 {
                   "index": {
-                    "name": "projectMember_projectId_idx_a96e4d92"
+                    "name": "project_member_projectId_idx_a96e4d92"
                   },
                   "source": {
                     "columns": [
                       "projectId"
                     ],
                     "namespaceId": "public",
-                    "tableName": "projectMember"
+                    "tableName": "project_member"
                   },
                   "target": {
                     "columns": [
@@ -2083,14 +2207,15 @@
                 },
                 {
                   "index": {
-                    "name": "projectMember_userId_idx_a489d58a"
+                    "name": "project_member_userId_idx_a489d58a"
                   },
+                  "onDelete": "cascade",
                   "source": {
                     "columns": [
                       "userId"
                     ],
                     "namespaceId": "public",
-                    "tableName": "projectMember"
+                    "tableName": "project_member"
                   },
                   "target": {
                     "columns": [
@@ -2106,16 +2231,16 @@
                   "columns": [
                     "projectId"
                   ],
-                  "name": "projectMember_projectId_idx_a96e4d92",
-                  "prefix": "projectMember_projectId_idx",
+                  "name": "project_member_projectId_idx_a96e4d92",
+                  "prefix": "project_member_projectId_idx",
                   "unique": false
                 },
                 {
                   "columns": [
                     "userId"
                   ],
-                  "name": "projectMember_userId_idx_a489d58a",
-                  "prefix": "projectMember_userId_idx",
+                  "name": "project_member_userId_idx_a489d58a",
+                  "prefix": "project_member_userId_idx",
                   "unique": false
                 }
               ],
@@ -2124,135 +2249,14 @@
                   "id"
                 ]
               },
-              "uniques": []
-            },
-            "rooms": {
-              "checks": [
-                {
-                  "expression": "\"status\" IN ('ACTIVE')",
-                  "name": "rooms_status_check_1644acb1",
-                  "prefix": "rooms_status_check"
-                }
-              ],
-              "columns": {
-                "createdAt": {
-                  "codecId": "pg/timestamptz-date@1",
-                  "dataType": "pg/timestamptz",
-                  "default": {
-                    "expression": "now()",
-                    "kind": "function"
-                  },
-                  "nullable": false
-                },
-                "id": {
-                  "codecId": "pg/text@1",
-                  "dataType": "pg/text",
-                  "nullable": false
-                },
-                "name": {
-                  "codecId": "pg/text@1",
-                  "dataType": "pg/text",
-                  "nullable": false
-                },
-                "projectId": {
-                  "codecId": "pg/text@1",
-                  "dataType": "pg/text",
-                  "nullable": false
-                },
-                "projectOwnerId": {
-                  "codecId": "pg/text@1",
-                  "dataType": "pg/text",
-                  "nullable": false
-                },
-                "status": {
-                  "codecId": "pg/text@1",
-                  "dataType": "pg/text",
-                  "default": {
-                    "kind": "literal",
-                    "value": "ACTIVE"
-                  },
-                  "nullable": false,
-                  "valueSet": {
-                    "entityKind": "valueSet",
-                    "entityName": "RoomStatus",
-                    "namespaceId": "public",
-                    "plane": "storage"
-                  }
-                },
-                "updatedAt": {
-                  "codecId": "pg/timestamptz-date@1",
-                  "dataType": "pg/timestamptz",
-                  "default": {
-                    "expression": "now()",
-                    "kind": "function"
-                  },
-                  "nullable": false
-                }
-              },
-              "foreignKeys": [
-                {
-                  "index": {
-                    "name": "rooms_projectId_idx_a96e4d92"
-                  },
-                  "source": {
-                    "columns": [
-                      "projectId"
-                    ],
-                    "namespaceId": "public",
-                    "tableName": "rooms"
-                  },
-                  "target": {
-                    "columns": [
-                      "id"
-                    ],
-                    "namespaceId": "public",
-                    "tableName": "project"
-                  }
-                },
-                {
-                  "index": {
-                    "name": "rooms_projectOwnerId_idx_ca18ad21"
-                  },
-                  "source": {
-                    "columns": [
-                      "projectOwnerId"
-                    ],
-                    "namespaceId": "public",
-                    "tableName": "rooms"
-                  },
-                  "target": {
-                    "columns": [
-                      "id"
-                    ],
-                    "namespaceId": "public",
-                    "tableName": "user"
-                  }
-                }
-              ],
-              "indexes": [
+              "uniques": [
                 {
                   "columns": [
-                    "projectId"
-                  ],
-                  "name": "rooms_projectId_idx_a96e4d92",
-                  "prefix": "rooms_projectId_idx",
-                  "unique": false
-                },
-                {
-                  "columns": [
-                    "projectOwnerId"
-                  ],
-                  "name": "rooms_projectOwnerId_idx_ca18ad21",
-                  "prefix": "rooms_projectOwnerId_idx",
-                  "unique": false
+                    "projectId",
+                    "userId"
+                  ]
                 }
-              ],
-              "primaryKey": {
-                "columns": [
-                  "id"
-                ]
-              },
-              "uniques": []
+              ]
             },
             "session": {
               "columns": {
@@ -2288,6 +2292,10 @@
                 "updated_at": {
                   "codecId": "pg/timestamptz-string@1",
                   "dataType": "pg/timestamptz",
+                  "default": {
+                    "expression": "now()",
+                    "kind": "function"
+                  },
                   "nullable": false
                 },
                 "user_agent": {
@@ -2483,7 +2491,7 @@
                 "CPlus"
               ]
             },
-            "InvitationAccepted": {
+            "InvitationStatus": {
               "kind": "valueSet",
               "values": [
                 "ACCEPTED",
@@ -2516,12 +2524,23 @@
         "kind": "postgres-schema"
       }
     },
-    "storageHash": "806b6f8c153e1c34b45351f56fe2cf091727dc8092a1aebd92ac7b0cce613ab7"
+    "storageHash": "747a23e0e1a18122b282ec0fd10f91798ec008576462cf785fef94962311aa12"
   },
   "execution": {
-    "executionHash": "c3e0999a16cef41cb62115db36688ca9d21ac3580427e7c9ab78c7a1998c73f8",
+    "executionHash": "0c54dd3f45964e8e524355d38d1ba8f1b3d4307d4010905e8e46a2f1d55873ac",
     "mutations": {
       "defaults": [
+        {
+          "onCreate": {
+            "id": "uuidv4",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "collaboration_rooms",
+            "field": "id",
+            "namespace": "public"
+          }
+        },
         {
           "onCreate": {
             "id": "uuidv4",
@@ -2541,6 +2560,21 @@
           "ref": {
             "entry": "documentState",
             "field": "id",
+            "namespace": "public"
+          }
+        },
+        {
+          "onCreate": {
+            "id": "timestampNow",
+            "kind": "generator"
+          },
+          "onUpdate": {
+            "id": "timestampNow",
+            "kind": "generator"
+          },
+          "ref": {
+            "entry": "documentState",
+            "field": "updatedAt",
             "namespace": "public"
           }
         },
@@ -2572,18 +2606,7 @@
             "kind": "generator"
           },
           "ref": {
-            "entry": "projectMember",
-            "field": "id",
-            "namespace": "public"
-          }
-        },
-        {
-          "onCreate": {
-            "id": "uuidv4",
-            "kind": "generator"
-          },
-          "ref": {
-            "entry": "rooms",
+            "entry": "project_member",
             "field": "id",
             "namespace": "public"
           }

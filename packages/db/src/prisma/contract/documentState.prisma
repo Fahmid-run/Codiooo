@@ -1,15 +1,12 @@
 // use prisma-8
+model DocumentState {
+  id         String          @id @onCreate(uuid())
+  documentId String          @unique
+  document   Document        @relation(fields: [documentId], references: [id], onDelete: Cascade)
 
-model DocumentState{
-  id            String        @id   @onCreate(uuid())
-  documentId String
-  document Document @relation(fields: [documentId], references: [id])
-  
-  state Bytes 
-  createdAt     TimestampJsDate @default(now())
-  updatedAt     TimestampJsDate @default(now())
+  state      Bytes
+  createdAt  TimestampJsDate @default(now())
+  updatedAt  TimestampJsDate @default(now()) @onCreate(now()) @onUpdate(now())
 
-
-@@map("documentState")
-
+  @@map("documentState")
 }
