@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { api } from "@/lib/api-client";
+import { api, type ApiResponse } from "@/lib/api-client";
 import { CreateProjectInput } from "../project.schema";
+import type { Project } from "../project.types";
 
 export const projectKeys = {
   all: ["projects"] as const,
@@ -11,7 +12,9 @@ export function useProjects() {
   return useQuery({
     queryKey: projectKeys.all,
     queryFn: async () => {
-      const data = await api("/projects", { method: "GET" });
+      const data = await api<ApiResponse<Project[]>>("/projects", {
+        method: "GET",
+      });
       return data.data;
     },
   });
@@ -21,7 +24,7 @@ export function useCreateProject() {
 
   return useMutation({
     mutationFn: async (payload: CreateProjectInput) => {
-      const response = await api("/projects", {
+      const response = await api<ApiResponse<Project>>("/projects", {
         method: "POST",
         body: payload,
       });

@@ -17,16 +17,12 @@ import { Badge } from "@/components/ui/badge";
 import { CreateProjectDialog } from "@/components/projects/create-project-dialog";
 import { ProjectCard } from "@/components/projects/project-card";
 import { WorkspaceNavigation } from "@/components/projects/workspace-navigation";
-import {
-  initialProjects,
-  type Project,
-  type WorkspaceSection,
-} from "@/lib/project";
+import { useProjects } from "../../../modules/project/hooks/useProject";
+import type { WorkspaceSection } from "@/lib/project";
 import { NewProjectCard } from "./new-project-card";
-import { CreateProjectInput } from "../../../modules/project/project.schema";
 
 export function ProjectsDashboard() {
-  const [projects, setProjects] = useState<Project[]>(initialProjects);
+  const { data: projects = [], isPending, isError, refetch } = useProjects();
   const [searchQuery, setSearchQuery] = useState("");
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [activeSection, setActiveSection] =
@@ -40,26 +36,11 @@ export function ProjectsDashboard() {
     }
 
     return projects.filter((project) =>
-      `${project.name} ${project.description} ${project.category}`
+      `${project.name} ${project.description ?? ""} ${project.projectOwner?.name ?? ""}`
         .toLowerCase()
         .includes(normalizedQuery),
     );
   }, [projects, searchQuery]);
-
-  const handleCreateProject = (values: CreateProjectInput) => {
-    const project: Project = {
-      id: crypto.randomUUID(),
-      name: values.name,
-      description: values.description,
-      category: "NEW PROJECT",
-      updatedAt: "Just now",
-      accent: "amber",
-      icon: "sparkles",
-    };
-
-    setProjects((currentProjects) => [project, ...currentProjects]);
-    setSearchQuery("");
-  };
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -157,43 +138,91 @@ export function ProjectsDashboard() {
                 </Badge>
               </div>
 
-              <div className="grid grid-cols-1 items-stretch gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                <NewProjectCard onClick={() => setIsCreateDialogOpen(true)} />
-                {filteredProjects.map((project) => (
-                  <ProjectCard key={project.id} project={project} />
-                ))}
-                {filteredProjects.length === 0 && searchQuery.trim() && (
-                  <Empty className="min-h-[21rem] rounded-2xl border border-dashed border-border/70 bg-card/35 p-6 sm:col-span-2 lg:col-span-3 xl:col-span-4">
-                    <EmptyHeader>
-                      <EmptyMedia variant="icon">
-                        <Search aria-hidden="true" />
-                      </EmptyMedia>
-                      <EmptyTitle>No projects found</EmptyTitle>
-                      <EmptyDescription>
-                        Try a different name or clear your search to see all
-                        projects.
-                      </EmptyDescription>
-                    </EmptyHeader>
-                    <EmptyContent>
-                      <Button
-                        type="button"
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setSearchQuery("")}
-                      >
-                        Clear search
-                      </Button>
-                    </EmptyContent>
-                  </Empty>
-                )}
-              </div>
+              {isPending ? (
+                <Empty className="min-h-[21rem] rounded-2xl border border-dashed border-border/70 bg-card/35 p-6">
+                  <EmptyHeader>
+                    <EmptyTitle>Loading projects…</EmptyTitle>
+                    <EmptyDescription>
+                      Fetching your workspace projects.
+                    </EmptyDescription>
+                  </EmptyHeader>
+                </Empty>
+              ) : isError ? (
+                <Empty className="min-h-[21rem] rounded-2xl border border-dashed border-border/70 bg-card/35 p-6">
+                  <EmptyHeader>
+                    <EmptyTitle>Couldn&apos;t load projects</EmptyTitle>
+                    <EmptyDescription>
+                      Something went wrong while fetching your projects.
+                    </EmptyDescription>
+                  </EmptyHeader>
+                  <EmptyContent>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => refetch()}
+                    >
+                      Try again
+                    </Button>
+                  </EmptyContent>
+                </Empty>
+              ) : (
+                <div className="grid grid-cols-1 items-stretch gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                  <NewProjectCard onClick={() => setIsCreateDialogOpen(true)} />
+                  {filteredProjects.map((project) => (
+                    <ProjectCard key={project.id} project={project} />
+                  ))}
+                  {filteredProjects.length === 0 && searchQuery.trim() && (
+                    <Empty className="min-h-[21rem] rounded-2xl border border-dashed border-border/70 bg-card/35 p-6 sm:col-span-2 lg:col-span-3 xl:col-span-4">
+                      <EmptyHeader>
+                        <EmptyMedia variant="icon">
+                          <Search aria-hidden="true" />
+                        </EmptyMedia>
+                        <EmptyTitle>No projects found</EmptyTitle>
+                        <EmptyDescription>
+                          Try a different name or clear your search to see all
+                          projects.
+                        </EmptyDescription>
+                      </EmptyHeader>
+                      <EmptyContent>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setSearchQuery("")}
+                        >
+                          Clear search
+                        </Button>
+                      </EmptyContent>
+                    </Empty>
+                  )}
+                  {filteredProjects.length === 0 && !searchQuery.trim() && (
+                    <Empty className="min-h-[21rem] rounded-2xl border border-dashed border-border/70 bg-card/35 p-6 sm:col-span-2 lg:col-span-3 xl:col-span-4">
+                      <EmptyHeader>
+                        <EmptyTitle>No projects yet</EmptyTitle>
+                        <EmptyDescription>
+                          Create your first project to get started.
+                        </EmptyDescription>
+                      </EmptyHeader>
+                      <EmptyContent>
+                        <Button
+                          type="button"
+                          size="sm"
+                          onClick={() => setIsCreateDialogOpen(true)}
+                        >
+                          Create project
+                        </Button>
+                      </EmptyContent>
+                    </Empty>
+                  )}
+                </div>
+              )}
             </section>
           </div>
 
           <CreateProjectDialog
             open={isCreateDialogOpen}
             onOpenChange={setIsCreateDialogOpen}
-            onCreate={handleCreateProject}
           />
         </main>
       ) : (

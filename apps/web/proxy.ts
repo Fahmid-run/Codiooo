@@ -1,12 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-import {
-  apiAuthPrefix,
-  authRoutes,
-  protectedRoute,
-  PublicRoutes,
-} from "./routes";
+import { apiAuthPrefix, authRoutes, PublicRoutes } from "./routes";
 
 import { auth } from "@/lib/auth";
 
@@ -17,39 +12,15 @@ export async function proxy(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Defense in depth: private API routes require a verified session.
-  // Per-route authorization remains the source of truth.
-  if (pathname.startsWith("/api/")) {
-    const session = await auth.api.getSession({
-      headers: request.headers,
-    });
-
-    if (!session?.user) {
-      return NextResponse.json(
-        {
-          success: false,
-          message: "Unauthorized",
-          data: null,
-          errors: null,
-        },
-        { status: 401 },
-      );
-    }
-
-    return NextResponse.next();
-  }
-
-  const isProtectedRoute = protectedRoute.some(
-    (route) => pathname === route || pathname.startsWith(`${route}/`),
-  );
-
   const isPublicRoute = PublicRoutes.some(
     (route) => pathname === route || pathname.startsWith(`${route}/`),
   );
 
-  const isAuthRoute = authRoutes.includes(pathname);
+  const isAuthRoute = authRoutes.some(
+    (route) => pathname === route || pathname.startsWith(`${route}/`),
+  );
 
-  if (!isProtectedRoute && !isAuthRoute) {
+  if (isPublicRoute && !isAuthRoute) {
     return NextResponse.next();
   }
 
@@ -59,11 +30,15 @@ export async function proxy(request: NextRequest) {
 
   const isLoggedIn = Boolean(session?.user);
 
-  if (isProtectedRoute && !isLoggedIn) {
-    return NextResponse.redirect(new URL("/auth/login", request.url));
+  if (!isLoggedIn && !isAuthRoute) {
+    const loginUrl = new URL("/auth/login", request.url);
+
+    loginUrl.searchParams.set("callbackUrl", pathname + request.nextUrl.search);
+
+    return NextResponse.redirect(loginUrl);
   }
 
-  if (isAuthRoute && isLoggedIn) {
+  if (isLoggedIn && isAuthRoute) {
     return NextResponse.redirect(new URL("/editor", request.url));
   }
 
@@ -71,8 +46,5 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [
-    "/((?!api/auth|_next/static|_next/image|favicon.ico|.*\\..*).*)",
-    "/api/:path*",
-  ],
+  matcher: ["/((?!api/auth|_next/static|_next/image|favicon.ico|.*\\..*).*)"],
 };

@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useForm } from "@tanstack/react-form";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/toast";
 import { loginSchema } from "@/schema/authSchema";
 import { authClient } from "@/lib/auth-client";
 
@@ -35,7 +35,10 @@ export function LoginForm({
     });
 
     if (error) {
-      toast.error(error.message ?? "GitHub sign-in failed.");
+      toast.add({
+        title: error.message ?? "GitHub sign-in failed.",
+        type: "error",
+      });
     }
   };
   const form = useForm({
@@ -56,7 +59,10 @@ export function LoginForm({
       });
 
       if (error) {
-        toast.error(error.message ?? "Invalid email or password.");
+        toast.add({
+          title: error.message ?? "Invalid email or password.",
+          type: "error",
+        });
       }
     },
   });

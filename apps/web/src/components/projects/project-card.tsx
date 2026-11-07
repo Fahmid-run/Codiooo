@@ -17,13 +17,18 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
-import { ProjectIcon, ProjectAccent, Project } from "@/lib/project";
+import type { Project } from "../../../modules/project/project.types";
+
+type ProjectIcon = "layers" | "layout" | "sparkles";
+type ProjectAccent = "amber" | "violet" | "blue";
 
 const projectIcons: Record<ProjectIcon, LucideIcon> = {
   layers: Layers,
   layout: LayoutGrid,
   sparkles: Sparkles,
 };
+
+const icons: ProjectIcon[] = ["layers", "layout", "sparkles"];
 
 const accentStyles: Record<
   ProjectAccent,
@@ -46,9 +51,24 @@ const accentStyles: Record<
   },
 };
 
+const accents: ProjectAccent[] = ["amber", "violet", "blue"];
+
+function hashString(value: string) {
+  let hash = 0;
+  for (let i = 0; i < value.length; i++) {
+    hash = (hash * 31 + value.charCodeAt(i)) >>> 0;
+  }
+  return hash;
+}
+
 export function ProjectCard({ project }: { project: Project }) {
-  const ProjectMark = projectIcons[project.icon];
-  const accent = accentStyles[project.accent];
+  const index = hashString(project.id) % icons.length;
+  const ProjectMark = projectIcons[icons[index] as ProjectIcon];
+  const accent = accentStyles[accents[index] as ProjectAccent];
+
+  const updatedLabel = new Intl.DateTimeFormat(undefined, {
+    dateStyle: "medium",
+  }).format(new Date(project.updatedAt));
 
   return (
     <article className="h-full">
@@ -104,7 +124,7 @@ export function ProjectCard({ project }: { project: Project }) {
               variant="outline"
               className="max-w-[8rem] border-border/80 bg-background/30 text-[0.62rem] uppercase tracking-[0.1em] text-muted-foreground"
             >
-              {project.category}
+              {project.projectOwner?.name ?? "Project"}
             </Badge>
           </CardAction>
         </CardHeader>
@@ -120,7 +140,7 @@ export function ProjectCard({ project }: { project: Project }) {
             <span className={cn("size-1.5 rounded-full", accent?.dot)} />
             In progress
           </span>
-          <span className="truncate text-right">{project.updatedAt}</span>
+          <span className="truncate text-right">{updatedLabel}</span>
         </CardFooter>
       </Card>
     </article>

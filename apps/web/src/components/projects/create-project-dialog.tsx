@@ -24,16 +24,13 @@ import { createProjectSchema } from "../../../modules/project/project.schema";
 import { useCreateProject } from "../../../modules/project/hooks/useProject";
 import { toast } from "../ui/toast";
 import { getApiErrorMessage } from "@/lib/get-api-errormsg";
-import { authClient } from "@/lib/auth-client";
 
 export function CreateProjectDialog({
   open,
   onOpenChange,
-  onCreate,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onCreate: (project) => void;
 }) {
   const { mutate, isPending } = useCreateProject();
 
@@ -54,17 +51,18 @@ export function CreateProjectDialog({
       });
     },
     onSubmit: async ({ value }) => {
-      const { data } = await authClient.getSession();
-      const sessionId = data?.session?.id;
       mutate(value, {
         onSuccess: () => {
           form.reset();
           onOpenChange(false);
         },
+        onError: (error) => {
+          toast.add({
+            title: getApiErrorMessage(error),
+            type: "error",
+          });
+        },
       });
-      console.log(value);
-      form.reset();
-      onOpenChange(false);
     },
   });
 
@@ -172,9 +170,9 @@ export function CreateProjectDialog({
             >
               Cancel
             </Button>
-            <Button type="submit">
+            <Button type="submit" disabled={isPending}>
               <Plus data-icon="inline-start" />
-              Create project
+              {isPending ? "Creating…" : "Create project"}
             </Button>
           </div>
         </form>

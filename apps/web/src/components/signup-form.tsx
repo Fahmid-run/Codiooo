@@ -18,7 +18,7 @@ import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
 import { RegisterSchema } from "@/schema/authSchema";
 import { useForm } from "@tanstack/react-form";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/toast";
 import Link from "next/link";
 
 export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
@@ -31,7 +31,10 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
     });
 
     if (error) {
-      toast.error(error.message ?? "GitHub sign-in failed.");
+      toast.add({
+        title: error.message ?? "GitHub sign-in failed.",
+        type: "error",
+      });
     }
   };
   const form = useForm({
@@ -55,9 +58,10 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
       });
 
       if (error) {
-        toast.error(
-          error.message ?? "Could not create your account. Try again.",
-        );
+        toast.add({
+          title: error.message ?? "Could not create your account. Try again.",
+          type: "error",
+        });
       }
     },
   });
