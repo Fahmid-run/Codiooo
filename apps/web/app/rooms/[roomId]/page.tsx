@@ -10,7 +10,7 @@ export default async function RoomPage({ params }: RoomPageProps) {
   const { roomId } = await params;
 
   return (
-    <main className="h-screen w-full bg-[#1e1e1e]">
+    <main className="h-screen w-full bg-background">
       <CollaborativeEditor roomId={roomId} />
     </main>
   );

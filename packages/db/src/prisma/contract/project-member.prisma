@@ -1,19 +1,18 @@
 //use prisma-8
 model ProjectMember {
-  id            String    @id       @onCreate(uuid())
-  name          String
-  status  RoomStatus @default(ACTIVE)
+  id         String                  @id @onCreate(uuid())
+  status     RoomStatus              @default(ACTIVE)
   permission ProjectMemberPermission
 
-  projectId String
-  project Project @relation(fields: [projectId], references: [id])
+  projectId  String
+  project    Project                 @relation(fields: [projectId], references: [id])
 
-  userId String
-  user User @relation(fields: [userId], references: [id])
+  userId     String
+  user       User                    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  createdAt     TimestamptzJsDate @default(now())
-  updatedAt     TimestamptzJsDate @default(now())
+  createdAt  TimestamptzJsDate       @default(now())
+  updatedAt  TimestamptzJsDate       @default(now())
 
-
-@@map("projectMember")
+  @@unique([projectId, userId])
+  @@map("project_member")
 }

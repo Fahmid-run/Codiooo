@@ -18,20 +18,24 @@ import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
 import { RegisterSchema } from "@/schema/authSchema";
 import { useForm } from "@tanstack/react-form";
+import { toast } from "@/components/ui/toast";
 import Link from "next/link";
 
 export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
   const handleGithub = async () => {
-    await authClient.signIn.social({
+    const { error } = await authClient.signIn.social({
       provider: "github",
-
-      callbackURL: "/dashboard",
-
+      callbackURL: "/editor",
       errorCallbackURL: "/error",
-
-      newUserCallbackURL: "/welcome",
-      // disableRedirect: true,
+      newUserCallbackURL: "/editor",
     });
+
+    if (error) {
+      toast.add({
+        title: error.message ?? "GitHub sign-in failed.",
+        type: "error",
+      });
+    }
   };
   const form = useForm({
     defaultValues: {
@@ -46,21 +50,19 @@ export function SignupForm({ ...props }: React.ComponentProps<typeof Card>) {
     onSubmit: async ({ value }) => {
       const { name, email, password } = value;
 
-      try {
-        const { data, error } = await authClient.signUp.email({
-          email,
-          password,
-          name,
-          callbackURL: "/dashboard",
+      const { error } = await authClient.signUp.email({
+        email,
+        password,
+        name,
+        callbackURL: "/editor",
+      });
+
+      if (error) {
+        toast.add({
+          title: error.message ?? "Could not create your account. Try again.",
+          type: "error",
         });
-
-        if (error) {
-          console.error("Signup error:", error);
-          return;
-        }
-
-        console.log("Signup successful:", data);
-      } catch (error) {}
+      }
     },
   });
 

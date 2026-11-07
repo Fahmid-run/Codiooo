@@ -1,159 +1,71 @@
-# Turborepo starter
+# Codiooo
 
-This Turborepo starter is maintained by the Turborepo core team.
+Browser-based collaborative cloud IDE: projects, rooms, real-time
+editing (Yjs/Hocuspocus), Monaco editor and an in-browser runtime
+(WebContainer).
 
-## Using this example
+## Monorepo
 
-Run the following command:
+pnpm + Turborepo. Node `>=24`.
 
-```sh
-npx create-turbo@latest
-```
+| Path | What it is |
+|---|---|
+| `apps/web` | Next.js 16 app (UI + API routes + Better Auth) |
+| `apps/collab-server` | Hocuspocus WebSocket server (JWT auth + PostgreSQL persistence) |
+| `packages/db` | Prisma 8 RC contract + `@codiooo/db` runtime client |
+| `packages/collab-token` | Shared collaboration JWT sign/verify (`jose`) |
+| `packages/eslint-config`, `packages/typescript-config` | Shared configs |
 
-## What's inside?
-
-This Turborepo includes the following packages/apps:
-
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `@next/eslint-plugin-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
+## Quick start
 
 ```sh
-cd my-turborepo
-turbo build
+cp apps/web/.env.example apps/web/.env.local   # fill in values
+cp apps/collab-server/.env.example apps/collab-server/.env
+cp packages/db/.env.example packages/db/.env   # DATABASE_URL
+pnpm install
+docker compose up -d                            # PostgreSQL on :5433
+pnpm --filter @codiooo/db contract:emit
+pnpm --filter @codiooo/db db:verify             # schema in sync
+pnpm dev                                        # turbo: web :3000 + collab :1234
 ```
 
-Without global `turbo`, use your package manager:
+`COLLAB_TOKEN_SECRET` must be identical in `apps/web/.env.local` and
+`apps/collab-server/.env`. Generate with `openssl rand -base64 48`.
+
+## Commands
 
 ```sh
-cd my-turborepo
-npx turbo build
-pnpm exec turbo build
-pnpm exec turbo build
+pnpm build / lint / check-types   # turbo across all packages
+pnpm --filter web test            # security + auth + collab-token suites
+pnpm --filter @codiooo/collab-token test
+pnpm --filter @codiooo/collab-server test
 ```
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+## Database (Prisma 8 RC)
 
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
+- Contract source: `packages/db/src/prisma/contract/*.prisma`.
+- Emit: `pnpm --filter @codiooo/db contract:emit`.
+- Migrations live in `packages/db/migrations/` (planner: `migration plan`,
+  apply: `db migrate`). `db update` is dev-only and writes no history.
+- Better Auth tables are created by the Prisma migration; do **not** run
+  `better-auth migrate`.
 
-```sh
-turbo build --filter=docs
-```
+## Authentication & authorization
 
-Without global `turbo`:
+- Better Auth (`apps/web/src/lib/auth.ts`) owns identity: email/password
+  + GitHub OAuth, opaque sessions, `COLLAB_TOKEN_SECRET` never reaches
+  the browser. Email verification is disabled (no mail provider).
+- API authorization is server-side (`withAuth` + service layers): users
+  reach only projects they own or are `ProjectMember` of; rooms resolve
+  through their project. Room token issuance (`GET /api/rooms/:id/token`)
+  re-checks access and returns 404 otherwise.
+- The collaboration server verifies the 5-minute JWT
+  (`packages/collab-token`) in `onAuthenticate` and persists Yjs state
+  to PostgreSQL (`DocumentState`, debounced). Rooms without a `Document`
+  are live-sync-only.
 
-```sh
-npx turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-```
+## Environment variables
 
-### Develop
-
-To develop all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo dev
-```
-
-Without global `turbo`, use your package manager:
-
-```sh
-cd my-turborepo
-npx turbo dev
-pnpm exec turbo dev
-pnpm exec turbo dev
-```
-
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo dev --filter=web
-```
-
-Without global `turbo`:
-
-```sh
-npx turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-```
-
-### Remote Caching
-
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo login
-```
-
-Without global `turbo`, use your package manager:
-
-```sh
-cd my-turborepo
-npx turbo login
-pnpm exec turbo login
-pnpm exec turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo link
-```
-
-Without global `turbo`:
-
-```sh
-npx turbo link
-pnpm exec turbo link
-pnpm exec turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+See `apps/web/.env.example` and `apps/collab-server/.env.example`.
+Server secrets are validated at startup (`apps/web/src/lib/env.ts`);
+client-visible variables are limited to `NEXT_PUBLIC_COLLAB_URL`.

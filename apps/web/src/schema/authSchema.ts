@@ -4,14 +4,12 @@ export const RegisterSchema = z
   .object({
     name: z.string().min(3, "Name must at least 3 characters long!!!"),
     email: z.email("Plz Provide a Valid Email!!"),
+    // Aligned with the server (Better Auth minPasswordLength: 8).
+    // Complexity rules that the server cannot enforce were removed so
+    // the client never rejects a password the server would accept.
     password: z
       .string()
-      .min(8, { message: "Password must be at least 8 characters long." })
-      .max(20, { message: "Password cannot exceed 20 characters." })
-      .regex(/^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-]).{8,}$/, {
-        message:
-          "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character.",
-      }),
+      .min(8, { message: "Password must be at least 8 characters long." }),
     confirmPassword: z.string(),
   })
   .refine((data) => data.password === data.confirmPassword, {

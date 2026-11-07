@@ -7,7 +7,7 @@ model User {
   image              String?
   collaborationRooms CollaborationRoom[]
   projects           Project[]
-  projectmembers     ProjectMember[]
+  projectMembers     ProjectMember[]
   accounts           Account[]
   sessions           Session[]
   documents          Document[]
@@ -30,7 +30,7 @@ model Account {
   scope                 String?
   password              String?
   createdAt             TimestamptzString  @default(now()) @map("created_at")
-  updatedAt             TimestamptzString  @map("updated_at")
+  updatedAt             TimestamptzString  @default(now()) @map("updated_at")
   user                  User               @relation(fields: [userId], references: [id], onDelete: Cascade, map: "account_userId_fkey")
 
   @@index([userId], map: "account_userId_idx")
@@ -42,7 +42,7 @@ model Session {
   expiresAt TimestamptzString @map("expires_at")
   token     String            @unique(map: "session_token_key")
   createdAt TimestamptzString @default(now()) @map("created_at")
-  updatedAt TimestamptzString @map("updated_at")
+  updatedAt TimestamptzString @default(now()) @map("updated_at")
   ipAddress String?           @map("ip_address")
   userAgent String?           @map("user_agent")
   userId    String            @map("user_id")

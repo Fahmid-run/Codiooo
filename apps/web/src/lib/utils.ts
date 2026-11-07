@@ -1,6 +1,7 @@
 export { cn } from "cn";
 
 import { NextResponse } from "next/server";
+import { ZodError } from "zod";
 
 type ApiResponseOptions<T> = {
   success?: boolean;
@@ -39,4 +40,17 @@ export function apiError(
     errors,
     status,
   });
+}
+
+export function handleApiError(error: unknown): Response {
+  if (error instanceof ZodError) {
+    return apiError("Validation failed", 400, error.issues);
+  }
+
+  if (error instanceof SyntaxError) {
+    return apiError("Invalid JSON body", 400);
+  }
+
+  console.error("Unhandled API error:", error);
+  return apiError("Internal server error", 500);
 }

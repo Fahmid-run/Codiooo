@@ -5,7 +5,14 @@
   "main": "index.ts",
   "scripts": {
     "test": "npx tsx src/test.db.ts",
-    "contract:emit": "prisma contract emit"
+    "contract:emit": "prisma contract emit",
+    "db:init": "prisma db init",
+    "db:migrate": "prisma db migrate",
+    "db:verify": "prisma db verify",
+    "db:schema": "prisma db schema",
+    "migration:plan": "prisma migration plan",
+    "migration:list": "prisma migration list",
+    "migration:status": "prisma migration status"
   },
   "keywords": [],
   "author": "",
